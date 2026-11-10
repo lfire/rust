@@ -1,0 +1,193 @@
+import { defineConfig } from 'vitepress'
+
+const BASE = process.env.VP_BASE || '/rust/'
+
+export default defineConfig({
+  lang: 'zh-CN',
+  title: 'Rust 零基础通关',
+  description: '一套为完全零基础学习者设计的交互式 Rust 教程：递进式知识路径 + 分类分级的工程实战。',
+  base: BASE,
+  outDir: '.vitepress/dist',
+  cacheDir: '.vitepress/cache',
+  lastUpdated: true,
+  cleanUrls: true,
+  ignoreDeadLinks: true,
+  metaChunk: true,
+  head: [
+    ['link', { rel: 'icon', type: 'image/svg+xml', href: `${BASE}favicon.svg` }],
+    ['meta', { name: 'theme-color', content: '#e8590c' }],
+    ['meta', { name: 'og:title', content: 'Rust 零基础通关 · 交互式教程' }],
+    ['meta', { name: 'og:description', content: '从第一行代码到生产级工程，边学边练的 Rust 中文教程。' }],
+  ],
+  markdown: {
+    lineNumbers: true,
+    container: {
+      tipLabel: '小贴士',
+      warningLabel: '注意',
+      dangerLabel: '当心',
+      infoLabel: '说明',
+      detailsLabel: '展开查看详情',
+    },
+  },
+  themeConfig: {
+    logo: '/favicon.svg',
+    siteTitle: 'Rust 零基础通关',
+    outline: { level: [2, 3], label: '本页目录' },
+    docFooter: { prev: '上一节', next: '下一节' },
+    darkModeSwitchLabel: '外观',
+    lightModeSwitchTitle: '切换到浅色模式',
+    darkModeSwitchTitle: '切换到深色模式',
+    sidebarMenuLabel: '课程目录',
+    returnToTopLabel: '回到顶部',
+    search: {
+      provider: 'local',
+      options: {
+        translations: {
+          button: { buttonText: '搜索课程', buttonAriaLabel: '搜索课程' },
+          modal: {
+            noResultsText: '没有找到相关内容',
+            resetButtonTitle: '清除搜索',
+            backButtonTitle: '返回',
+            displayDetails: '展开详情',
+            footer: { selectText: '选择', navigateText: '切换', closeText: '关闭' },
+          },
+        },
+      },
+    },
+    nav: [
+      { text: '学习路线', link: '/guide/' },
+      { text: '阶段课程', link: '/foundation/' },
+      { text: '工程实战', link: '/projects/' },
+      { text: '练习与速查', link: '/practice/' },
+      { text: '关于', link: '/about/' },
+    ],
+    sidebar: {
+      '/guide/': [
+        { text: '开始之前', collapsed: false, items: [
+          { text: '课程总目录（66 讲）', link: '/guide/curriculum' },
+          { text: '如何使用这套教程', link: '/guide/' },
+          { text: '01 开篇：基础概念串讲', link: '/guide/opening' },
+          { text: '02 装好你的 Rust 环境', link: '/guide/setup' },
+          { text: '03 第一行 Rust 代码', link: '/guide/hello' },
+        ] },
+      ],
+      '/foundation/': stageSidebar(),
+      '/basics/': stageSidebar(),
+      '/core/': stageSidebar(),
+      '/concurrency/': stageSidebar(),
+      '/projects/': [
+        { text: '场景地图 · A/B 类（39–48，含 KV 第 1–3 步）', collapsed: false, items: [
+          { text: '场景地图与组织逻辑', link: '/projects/' },
+          { text: 'KV Server 贯穿线总览', link: '/projects/kv/' },
+          { text: '39 猜数字游戏', link: '/projects/guess-number' },
+          { text: '40 mini-grep 文件搜索', link: '/projects/mini-grep' },
+          { text: '41 网页抓取转 Markdown', link: '/projects/scrape-url' },
+          { text: '42 待办清单（serde 持久化）', link: '/projects/todo-cli' },
+          { text: '43 CLI 工程化与集成测试', link: '/projects/cli-engineering' },
+          { text: '44 图片服务器', link: '/projects/image-server' },
+          { text: '45 KV 第 1 步 内存版与 trait 抽象', link: '/projects/kv/1-memory' },
+          { text: '46 KV 第 2 步 网络与协议帧', link: '/projects/kv/2-network' },
+          { text: '47 KV 第 3 步 TLS 与异步', link: '/projects/kv/3-async' },
+          { text: '48 网络编程进阶', link: '/projects/network-advanced' },
+        ] },
+        { text: 'C–F 类（49–57，含 KV 第 4–5 步）', collapsed: false, items: [
+          { text: '49 SQL / CSV 数据工具', link: '/projects/sql-data-tool' },
+          { text: '50 数据工程：sqlx / DataFusion', link: '/projects/data-engineering' },
+          { text: '51 手写 MPSC channel', link: '/projects/mpsc-channel' },
+          { text: '52 Actor 模型与任务分发', link: '/projects/actor' },
+          { text: '53 unsafe Rust 与 FFI', link: '/projects/ffi' },
+          { text: '54 用 PyO3 写 Python 扩展', link: '/projects/pyo3' },
+          { text: '55 KV 第 4 步 重构与 Pub/Sub', link: '/projects/kv/4-refactor' },
+          { text: '56 KV 第 5 步 生产化', link: '/projects/kv/5-production' },
+          { text: '57 软件架构、生态与持续精进', link: '/projects/production' },
+        ] },
+        { text: 'G 类 · Rust × 前端与桌面（58–63）', collapsed: false, items: [
+          { text: '场景总览与选型', link: '/projects/frontend/' },
+          { text: '58 WASM 工具链：wasm-bindgen 与 wasm-pack', link: '/projects/frontend/wasm' },
+          { text: '59 Rust 计算模块加速前端', link: '/projects/frontend/wasm-practice' },
+          { text: '60 Leptos 写前端 SPA', link: '/projects/frontend/leptos' },
+          { text: '61 Tauri 桌面应用', link: '/projects/frontend/tauri' },
+          { text: '62 Node 原生插件', link: '/projects/frontend/node-addon' },
+          { text: '63 全栈类型共享', link: '/projects/frontend/fullstack' },
+        ] },
+        { text: 'H–I 类 · 云原生 / 嵌入式（64–66）', collapsed: false, items: [
+          { text: '64 tonic gRPC 微服务', link: '/projects/grpc' },
+          { text: '65 边缘与 Serverless', link: '/projects/edge' },
+          { text: '66 嵌入式与图形', link: '/projects/embedded' },
+        ] },
+      ],
+      '/practice/': [
+        { text: '练习与速查', collapsed: false, items: [
+          { text: '综合自测', link: '/practice/' },
+          { text: '语法速查表', link: '/practice/cheatsheet' },
+          { text: '零基础常见问题', link: '/practice/faq' },
+        ] },
+      ],
+      '/about/': [
+        { text: '关于本站', collapsed: false, items: [
+          { text: '关于与内容来源', link: '/about/' },
+          { text: '本地运行与 Pages 部署', link: '/about/deploy' },
+        ] },
+      ],
+    },
+    socialLinks: [{ icon: 'github', link: 'https://github.com/lfire/rust' }],
+    footer: {
+      message: '为完全零基础的学习者而写 · 参考《Rust 编程第一课》教学材料重新编撰，并补充 Rust × 前端等新场景',
+      copyright: '© 2026 Rust 零基础通关',
+    },
+  },
+})
+
+function stageSidebar() {
+  return [
+    { text: '🟢 阶段一 · 编程地基', collapsed: false, items: [
+      { text: '阶段导览', link: '/foundation/' },
+      { text: '04 程序、数据、值与类型', link: '/foundation/concepts' },
+      { text: '05 栈与堆：数据住在哪', link: '/foundation/memory' },
+      { text: '06 指针、引用与地址', link: '/foundation/pointers' },
+      { text: '07 函数、方法、闭包与表达式', link: '/foundation/callables' },
+      { text: '08 为什么值得学 Rust', link: '/foundation/why-rust' },
+    ] },
+    { text: '🔵 阶段二 · Rust 语法入门', collapsed: false, items: [
+      { text: '阶段导览', link: '/basics/' },
+      { text: '09 变量、可变性与类型推导', link: '/basics/variables' },
+      { text: '10 字符串：&str 与 String', link: '/basics/strings' },
+      { text: '11 函数、语句与表达式', link: '/basics/functions' },
+      { text: '12 控制流 if / loop / while / for', link: '/basics/control-flow' },
+      { text: '13 match 与模式匹配入门', link: '/basics/match-basics' },
+      { text: '14 Cargo 与项目结构', link: '/basics/cargo' },
+      { text: '15 阶段综合：成绩统计程序', link: '/basics/capstone' },
+      { text: '所有权初体验（补充）', link: '/basics/ownership-first-look' },
+    ] },
+    { text: '🟣 阶段三 · 核心机制', collapsed: false, items: [
+      { text: '阶段导览', link: '/core/' },
+      { text: '16 所有权三法则与 Move', link: '/core/ownership' },
+      { text: '17 Copy、Clone 与自动 drop', link: '/core/copy-drop' },
+      { text: '18 借用与引用 &T', link: '/core/borrowing' },
+      { text: '19 可变借用与借用规则', link: '/core/mutable-borrow' },
+      { text: '20 切片 &str 与 &[T]', link: '/core/slices' },
+      { text: '21 生命周期：引用不能比活得更久', link: '/core/lifetime' },
+      { text: '22 生命周期标注与省略规则', link: '/core/lifetime-annotations' },
+      { text: '23 struct、impl 与方法', link: '/core/struct-enum' },
+      { text: '24 enum、Option 与 Result', link: '/core/enums' },
+      { text: '25 模式匹配进阶', link: '/core/patterns' },
+      { text: '26 集合容器 Vec / HashMap', link: '/core/collections' },
+      { text: '27 错误处理', link: '/core/error-handling' },
+      { text: '28 Trait：定义与实现', link: '/core/traits' },
+      { text: '29 泛型与 trait bound', link: '/core/generics' },
+      { text: '30 智能指针', link: '/core/smart-pointers' },
+      { text: '30 闭包与迭代器', link: '/core/closures-iterators' },
+    ] },
+    { text: '🟠 阶段四 · 并发与异步', collapsed: false, items: [
+      { text: '阶段导览', link: '/concurrency/' },
+      { text: '31 数据竞争与 Send/Sync', link: '/concurrency/send-sync' },
+      { text: '32 线程、move 闭包与 JoinHandle', link: '/concurrency/threads' },
+      { text: '33 共享状态 Arc + Mutex', link: '/concurrency/shared-state' },
+      { text: '34 Atomic、Condvar 与 RwLock', link: '/concurrency/atomics' },
+      { text: '35 消息传递：Channel', link: '/concurrency/channels' },
+      { text: '36 Future 与 executor', link: '/concurrency/future-executor' },
+      { text: '37 async/await、Waker 与 Pin', link: '/concurrency/async' },
+      { text: '38 异步 IO、Stream / Sink 与 tokio', link: '/concurrency/async-io' },
+    ] },
+  ]
+}

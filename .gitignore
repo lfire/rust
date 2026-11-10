@@ -1,5 +1,11 @@
 node_modules/
 .vitepress/dist/
 .vitepress/cache/
+docs/.vitepress/dist/
+docs/.vitepress/cache/
 .DS_Store
 .kuai.yaml
+
+# 原始教材（rust-coding/，约 1.2GB）保留在本地，不随 Pages 站点一起推送。
+# 如需纳入版本控制，删除下面这一行并用 git add -f rust-coding/ 即可。
+rust-coding/
