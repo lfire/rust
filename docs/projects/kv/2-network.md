@@ -24,7 +24,7 @@ TCP 是**字节流**，没有消息边界。你 `write` 两次 100 字节，对�
 └──────────────┴───────────────────────────────┘
 ```
 
-<Callout type="tip" title="原教材的做法" text="原课程用 `prost` 生成 protobuf 类型，再封装出 `AsyncProstReader / AsyncProstWriter`，把「读长度 → 读 N 字节 → 反序列化」封装成一个 Stream。这里先用同步版本讲清原理，第 3 步再改成异步。" />
+<Callout type="tip" title="原教材的做法" text="原课程用 `prost` 生成 protobuf 类型，再封装出 `AsyncProstReader / AsyncProstWriter`，把「读长度 → 读 N 字节 → 反序列化」封装成一个 Stream。这里先用命令式 async 循环讲清原理，第 3 步再加 TLS 并封装成 Stream / Sink。" />
 
 ## 依赖与 workspace
 
@@ -159,6 +159,6 @@ async fn main() -> anyhow::Result<()> {
 
 <CheckList id="kv2-check" title="第 2 步验收" :items='["客户端能通过 TCP 完成 Set / Get", "能正确处理半包、粘包与对端关闭", "帧长度有上限", "第 1 步的单元测试仍然全绿"]' />
 
-下一步给这条明文连接加 TLS，并把同步思路彻底改成异步流。
+下一步给这条明文连接加 TLS，并把命令式的帧读写循环封装成 Stream / Sink。
 
 [下一讲：第 47 讲 KV 第 3 步 TLS 与异步 →](/projects/kv/3-async.md)

@@ -207,6 +207,41 @@ npm run tauri build     # 产出 dmg / msi / AppImage / deb
 
 <Exercise title="加一个删除命令" task="实现 `delete_note(name)` 命令：复用 safe_name 校验，删除对应 .md 文件；文件不存在时返回可读错误而不是 panic。前端加一个删除按钮并刷新列表。" hints='["用 std::fs::remove_file", "先判断路径是否存在，给出中文错误", "前端 invoke 的 catch 里展示错误"]' solution="#[tauri::command]\nfn delete_note(name: &str, state: tauri::State&lt;'_, AppState&gt;) -&gt; Result&lt;(), String&gt; {\n    let safe = safe_name(name)?;\n    let dir = state.notes_dir.lock().map_err(|e| e.to_string())?;\n    let path = dir.join(safe);\n    if !path.exists() { return Err(&quot;笔记不存在&quot;.into()); }\n    std::fs::remove_file(path).map_err(|e| e.to_string())\n}\n// 别忘了加进 generate_handler![list_notes, read_note, save_note, delete_note]" explain="所有命令共用 safe_name，校验逻辑只写一份 —— 这正是把边界收在一处的价值。" />
 
+## 另一种桌面 GUI：Slint
+
+Tauri 和 Electron 都是「用网页技术画界面」。如果界面不复杂、又想彻底甩开 WebView，还有**原生绘制**这条路：Slint 用 `.slint` 标记语言描述界面，编译期生成 Rust 类型，产物就是一个二进制可执行文件。
+
+| 维度 | Tauri / Electron（WebView） | Slint（原生绘制） |
+| --- | --- | --- |
+| 界面技术 | HTML / CSS / JS | `.slint` 声明式组件 |
+| 产物 | 前端资源 + 后端二进制 | 单个可执行文件 |
+| 跨系统一致性 | 取决于系统 WebView（Tauri）或自带 Chromium（Electron） | 自绘，风格统一 |
+| 组件生态 | 前端组件库海量 | 内置约 20 个 Widget，可自定义 |
+| 适合 | 已有前端团队、复杂富交互界面 | 工具类、嵌入式面板、要求体积与部署简单 |
+
+`.slint` 里只有三件事需要记：
+
+- **Component**：一棵界面树，`Window` / `Text` / `Rectangle` 加 `HorizontalLayout` / `GridLayout` 等布局。
+- **Property**：`property <string> dialog;` 用 `in` / `out` / `in-out` / `private` 控制 Rust 侧读写权限；属性绑定会随依赖自动重算，`<=>` 是双向绑定。
+- **Callback**：`callback send-ask-content(string);` 只有签名，Rust 侧自动变成 `on_send_ask_content(...)`；顶层属性还会生成 `get_xxx` / `set_xxx`。
+
+```rust
+slint::include_modules!();
+
+fn main() {
+    let ui = AppWindow::new().unwrap();
+    let handle = ui.as_weak();          // Weak 避免循环引用
+    ui.on_send_ask_content(move |content| {
+        // 把用户输入交给后台线程处理
+    });
+    ui.run().unwrap();
+}
+```
+
+<Callout type="warn" title="耗时任务别放主线程" text="推理、图片处理这类活要放进 `std::thread::spawn` 的后台线程，更新 UI 时用 `invoke_from_event_loop` 投递回主线程；关窗时记得发消息通知后台退出。另外 Slint 拿不到单个界面元素的 handle，需要交互的属性必须先上提到顶层 Component。" />
+
+<Quiz no="61-3" q="Slint 相比 Tauri 最实质的差别是？" :options='["Slint 用 Rust 写界面逻辑而 Tauri 用 Node", "Slint 自绘界面、不依赖系统 WebView，产物是单个二进制", "Slint 只能跑在嵌入式设备上", "Tauri 不支持跨平台"]' answer="1" explain="两者后端都是 Rust；差别在渲染层：WebView 复用系统浏览器，Slint 用自有 .slint 语言原生绘制。" />
+
 ## 常见坑
 
 | 现象 | 处理 |

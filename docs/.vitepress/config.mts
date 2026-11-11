@@ -164,7 +164,9 @@ function stageSidebar() {
       { text: '13 match 与模式匹配入门', link: '/basics/match-basics' },
       { text: '14 Cargo 与项目结构', link: '/basics/cargo' },
       { text: '15 阶段综合：成绩统计程序', link: '/basics/capstone' },
-      { text: '所有权初体验（补充）', link: '/basics/ownership-first-look' },
+    ] },
+    { text: 'L2 → L3 · 阶段过渡（不计入 66 讲）', collapsed: false, items: [
+      { text: '所有权初体验 · 交互实验台', link: '/basics/ownership-first-look' },
     ] },
     { text: '🟣 阶段三 · 核心机制', collapsed: false, items: [
       { text: '阶段导览', link: '/core/' },

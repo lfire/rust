@@ -70,7 +70,7 @@ fn main() {
 
 <Callout type="tip" title="优先用 for" text="Rust 的 for 遍历的是迭代器，不会产生「下标越界」这类错误。while 更适合「次数事先不知道」的场景，loop 常用于服务器主循环和重试逻辑。" />
 
-`1..3` 是左闭右开（1、2），`1..=3` 含右端（1、2、3）。遍历数组时注意 `for x in arr`（拿值）和 `for x in &arr`（拿引用）的区别，[第 18 讲](/core/borrowing.md) 会解释为什么。
+`1..3` 是左闭右开（1、2），`1..=3` 含右端（1、2、3）。遍历数组时注意 `for x in arr`（拿值）和 `for x in &arr`（拿引用）的区别，[第 26 讲](/core/collections.md) 会讲清楚为什么。
 
 <Predict no="12-2" q="for n in 1..3 会把循环体执行几次？" :options='["1 次", "2 次", "3 次", "4 次"]' answer="1" output="2 次" explain="1..3 是左闭右开，包含 1、2；要含右端得写 1..=3。" />
 

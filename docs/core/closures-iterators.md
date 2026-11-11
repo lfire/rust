@@ -110,7 +110,7 @@ fn main() {
 - **零成本**：整条链编译后通常是一个紧凑循环，没有中间 `Vec`、没有虚调用。
 - **消费型**：`collect` / `sum` / `count` / `for` 会消耗迭代器；适配器不会。
 
-<Predict no="30-1" q="`vec![1,2,3].iter().map(|x| x + 1);` 单独一行会？" :options='["立即算出 [2,3,4]", "什么都不做，并给出 unused 警告", "原地修改原 Vec", "运行时 panic"]' answer="1" output="（无输出）warning: unused `Map` that must be used" explain="迭代器惰性；必须被 collect / sum / for 消费才真正执行。" />
+<Predict no="30-5" q="`vec![1,2,3].iter().map(|x| x + 1);` 单独一行会？" :options='["立即算出 [2,3,4]", "什么都不做，并给出 unused 警告", "原地修改原 Vec", "运行时 panic"]' answer="1" output="（无输出）warning: unused `Map` that must be used" explain="迭代器惰性；必须被 collect / sum / for 消费才真正执行。" />
 
 ### 常用适配器速查
 
@@ -176,11 +176,11 @@ let sum: i32 = v.iter().filter(|&&x| x % 2 == 0).map(|&x| x * 10).sum();
 
 因为适配器都是**泛型 + 内联**，LLVM 能把整条链融合成一个循环（loop fusion），既不分配中间集合，也没有函数指针调用。零成本的前提是链式调用能被单态化 —— 如果中途塞进 `Box<dyn Iterator>`，就会引入动态分发。
 
-<Quiz no="30-2" q="关于 `Fn` / `FnMut` / `FnOnce`，哪些说法正确？" :options='["Fn 只读借用捕获变量", "FnMut 会可变借用捕获变量", "FnOnce 拿走所有权，最多调一次", "包含关系是 Fn 包含 FnMut 包含 FnOnce"]' answer="0,1,2" multi="true" explain="包含关系反了：Fn ⊂ FnMut ⊂ FnOnce，即能当 Fn 用的一定能当 FnOnce 用。" />
+<Quiz no="30-6" q="关于 `Fn` / `FnMut` / `FnOnce`，哪些说法正确？" :options='["Fn 只读借用捕获变量", "FnMut 会可变借用捕获变量", "FnOnce 拿走所有权，最多调一次", "包含关系是 Fn 包含 FnMut 包含 FnOnce"]' answer="0,1,2" multi="true" explain="包含关系反了：Fn ⊂ FnMut ⊂ FnOnce，即能当 Fn 用的一定能当 FnOnce 用。" />
 
-<Quiz no="30-3" q="闭包里写了 `move`，意味着？" :options='["该闭包一定只能调用一次", "捕获变量的所有权被移进闭包", "闭包会在新线程执行", "闭包变成不可变"]' answer="1" explain="move 只决定捕获方式；实现哪个 Fn trait 仍由闭包体怎么用变量决定。" />
+<Quiz no="30-7" q="闭包里写了 `move`，意味着？" :options='["该闭包一定只能调用一次", "捕获变量的所有权被移进闭包", "闭包会在新线程执行", "闭包变成不可变"]' answer="1" explain="move 只决定捕获方式；实现哪个 Fn trait 仍由闭包体怎么用变量决定。" />
 
-<Quiz no="30-4" q="为什么迭代器的 `map` / `filter` 通常零成本？" :options='["运行时做了 JIT 编译", "泛型单态化 + 内联让整条链融合成一个循环", "它们其实不执行任何代码", "标准库用了 unsafe 跳过检查"]' answer="1" explain="适配器是泛型默认方法，编译期就能展开；前提是没有中途装箱成 dyn Iterator。" />
+<Quiz no="30-8" q="为什么迭代器的 `map` / `filter` 通常零成本？" :options='["运行时做了 JIT 编译", "泛型单态化 + 内联让整条链融合成一个循环", "它们其实不执行任何代码", "标准库用了 unsafe 跳过检查"]' answer="1" explain="适配器是泛型默认方法，编译期就能展开；前提是没有中途装箱成 dyn Iterator。" />
 
 <Exercise title="用一条链做统计" task="给 `let scores = vec![58, 92, 73, 45, 88, 100];`，用一条迭代器链求出所有及格（>= 60）分数的平均值，不要显式 for 循环；再用 `fold` 写成一次性算出 (总和, 个数) 的版本。" hints='["先 copied() 再 filter，避免双重引用", "平均值注意转 f64 并处理空列表", "fold 初始值是 (0i32, 0usize)"]' solution="fn main() {\n    let scores = vec![58, 92, 73, 45, 88, 100];\n    let passed: Vec&lt;i32&gt; = scores.iter().copied().filter(|&amp;s| s &gt;= 60).collect();\n    let avg = passed.iter().sum::&lt;i32&gt;() as f64 / passed.len() as f64;\n    println!(&quot;人数 {} 平均 {}&quot;, passed.len(), avg);\n\n    let (total, n) = scores.iter().copied().filter(|&amp;s| s &gt;= 60)\n        .fold((0i32, 0usize), |(t, c), s| (t + s, c + 1));\n    println!(&quot;{} / {}&quot;, total, n);\n}" explain="fold 版不产生中间 Vec，是迭代器零成本优势最直接的用法。" />
 

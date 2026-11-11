@@ -7,7 +7,7 @@ description: 用一个项目从内存版走到生产级服务，串起 trait、�
 
 # 贯穿项目 · KV Server 五步演进
 
-前面九个项目彼此独立，学的是「各种场景怎么做」。这个项目反过来：**只做一个系统，让它连续长大五次**。它模拟真实工作里最常见的情形 —— 需求不断加，架构跟着演，而你不能每次都推倒重来。
+前面的场景项目彼此独立，学的是「各种场景怎么做」。这个项目反过来：**只做一个系统，让它连续长大五次**。它模拟真实工作里最常见的情形 —— 需求不断加，架构跟着演，而你不能每次都推倒重来。
 
 ## 最终形态
 
@@ -20,8 +20,8 @@ description: 用一个项目从内存版走到生产级服务，串起 trait、�
 | 步 | 主题 | 新增能力 | 主要用到的知识 |
 | --- | --- | --- | --- |
 | [第 1 步](/projects/kv/1-memory.md) | 内存版与 trait 抽象 | 命令模型、`Storage` / `CommandService` | L3 enum / trait / 测试 |
-| [第 2 步](/projects/kv/2-network.md) | 网络与协议帧 | TCP、Frame 编解码、client/server 双二进制 | L3 trait + L4 线程 |
-| [第 3 步](/projects/kv/3-async.md) | TLS 与异步 | x509 证书、tokio、Stream / Sink | L4 异步 |
+| [第 2 步](/projects/kv/2-network.md) | 网络与协议帧 | TCP、Frame 编解码、client/server 双二进制 | L3 trait + L4 异步任务 |
+| [第 3 步](/projects/kv/3-async.md) | TLS 与异步 | x509 证书、tokio、Stream / Sink | L4 异步 + Stream / Sink |
 | [第 4 步](/projects/kv/4-refactor.md) | 重构与 Pub/Sub | yamux 多路复用、事件通知、大重构 | trait object / channel |
 | [第 5 步](/projects/kv/5-production.md) | 生产化 | 配置、集成测试、压测、监控、CI/CD | 工程化 |
 

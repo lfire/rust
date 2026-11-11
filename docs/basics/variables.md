@@ -92,7 +92,7 @@ fn main() {
 
 ```rust
 let input = "42";
-let input: i32 = input.parse().unwrap();  // 同名，类型从 &str 变成 i32
+let input: i32 = input.parse().unwrap();  // 同名，类型从 &str 变成 i32；unwrap 暂照抄，第 24、27 讲展开
 ```
 
 <Predict no="09-2" q="下面这段输出什么？" :options='["6", "5", "编译错误：x 不可变", "编译错误：类型冲突"]' answer="0" output="6" explain="这里用的是遮蔽而非修改：let x = x + 1 创建了一个同名新绑定，合法且值为 6。" />

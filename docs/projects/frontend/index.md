@@ -50,7 +50,7 @@ WASM 这条路径由两讲组成：先搭工具链（第 58 讲），再做完�
 | [第 62 讲 Node 原生插件](/projects/frontend/node-addon.md) | 给 Node 写的哈希模块，理解 SWC 一类工具链 | ★★★★★ |
 | [第 63 讲 全栈类型共享](/projects/frontend/fullstack.md) | axum 后端自动生成 TS 类型，前后端不写重复 DTO | ★★★★☆ |
 
-<StepBox title="建议学习顺序" :steps='[{"title":"先做第 58 讲工具链，再做第 59 讲实战","body":"先搭起工具链，再亲手跨一次 JS ↔ Rust 边界，把线性内存、类型转换、两次拷贝体验一遍。","tip":"这是理解其余几条路径的基础。"},{"title":"再做第 63 讲 全栈类型共享","body":"成本最低、收益最直接：后端加几个 derive，前端就再也不用手写接口类型。"},{"title":"然后按方向二选一","body":"想做界面 → 第 60 讲 Leptos 或 第 61 讲 Tauri；想做工具链 → 第 62 讲 napi-rs。","tip":"Tauri 与 Leptos 可以组合：Tauri 管壳，Leptos 管界面。"},{"title":"最后回头看性能与发布","body":"补 wasm-opt、CI 多平台构建、npm 发布、自动更新。"}]' />
+<StepBox title="建议学习顺序" :steps='[{"title":"先做第 58 讲工具链，再做第 59 讲实战","body":"先搭起工具链，再亲手跨一次 JS ↔ Rust 边界，把线性内存、类型转换、两次拷贝体验一遍。","tip":"这是理解其余几条路径的基础。"},{"title":"接着按编号走第 60～63 讲","body":"Leptos 写界面、Tauri 做桌面、napi-rs 进 Node，最后第 63 讲做全栈类型共享：后端加几个 derive，前端就不用手写接口类型。","tip":"编号顺序就是这条专题线的默认顺序；时间紧可以先跳到第 63 讲，成本最低、收益最直接。"},{"title":"最后按方向深挖与发布","body":"想做界面可把 Tauri 与 Leptos 组合（Tauri 管壳、Leptos 管界面）；再补 wasm-opt、CI 多平台构建、npm 发布与自动更新。","tip":"发布相关参数见第 58 讲工具链。"}]' />
 
 ## 常见误区
 

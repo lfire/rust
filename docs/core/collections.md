@@ -26,7 +26,7 @@ fn main() {
         Some(x) => println!("第 10 个是 {}", x),
         None    => println!("越界了"),
     }
-    // let x = v2[第 10 讲];             // ❌ 越界 panic
+    // let x = v2[10];             // ❌ 越界 panic
 }
 ```
 

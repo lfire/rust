@@ -205,6 +205,44 @@ fn main() -> anyhow::Result<()> {
 
 <Exercise title="加一个 AND 条件" task="给 Expr 增加 `And(Box&lt;Expr&gt;, Box&lt;Expr&gt;)` 变体，并在 eval_cond 里实现；顺手让解析器支持用 AND 连接的两个比较（提示：先按 AND 切分再递归解析）。" hints='["match 里加一个分支调用两次 eval_cond", "解析时按 AND 关键字切分成两段", "把单段比较的解析抽成一个小函数便于复用"]' solution="fn parse_cond(s: &str) -&gt; Option&lt;Expr&gt; { /* 解析 col &gt; 数字 */ }\n\n// 组合\nlet parts: Vec&lt;&amp;str&gt; = cond.split(&quot; AND &quot;).collect();\nfilter = match parts.len() {\n    1 =&gt; parse_cond(parts[0]),\n    2 =&gt; Some(Expr::And(\n        Box::new(parse_cond(parts[0])?),\n        Box::new(parse_cond(parts[1])?),\n    )),\n    _ =&gt; None,\n};" explain="把「解析一个条件」抽成函数，组合逻辑就变成纯结构拼装 —— 这叫组合子思想。" />
 
+## 不用手写解析器：Nom 组合子
+
+本讲手动切出了查询 AST。真实项目里更常见的做法是**解析器组合子**：每个小解析器就是一个普通 Rust 函数，组合子把若干小解析器拼成大的，可以无限叠加，代码形状几乎就是数据结构的形状。
+
+Nom 的统一约定是：parser 接收输入，返回 `(剩余输入, 解析结果)`，即 `IResult<I, O> = Result<(I, O), Err<E>>`。因为总是把「还没读的部分」交回去，它天然适合边取数据边解析的流式场景，而且大部分路径零拷贝。
+
+```rust
+// 示意：Nom 7 风格，需要本地项目引入 nom = "7"
+use nom::{bytes::complete::tag, sequence::Tuple, IResult};
+
+struct Color { red: u8, green: u8, blue: u8 }
+
+fn hex_primary(input: &str) -> IResult<&str, u8> {
+    let (rest, two) = nom::bytes::complete::take_while_m_n(2, 2, |c: char| c.is_ascii_hexdigit())(input)?;
+    Ok((rest, u8::from_str_radix(two, 16).unwrap()))
+}
+
+fn hex_color(input: &str) -> IResult<&str, Color> {
+    let (input, _) = tag("#")(input)?;
+    let (input, (red, green, blue)) = (hex_primary, hex_primary, hex_primary).parse(input)?;
+    Ok((input, Color { red, green, blue }))
+}
+```
+
+| 层次 | 常用工具 | 作用 |
+| --- | --- | --- |
+| 基本解析器 | `tag` / `tag_no_case` | 匹配固定字面量 |
+| | `digit1` / `alpha1` / `hex_digit1` / `space0` | 匹配一类字符，`1` 表示至少一次、`0` 表示可为零 |
+| | `i32` / `float` | 直接解析出数值类型 |
+| 组合子 | `alt` | 多个分支择一 |
+| | `tuple` / `pair` / `separated_pair` | 按顺序拼接，中间可带分隔符 |
+| | `delimited` | 去掉首尾包裹（如括号） |
+| | `map_res` / `take_while_m_n` | 把匹配结果转成自己的类型 / 限定重复次数 |
+
+<Callout type="tip" title="怎么选解析方案" text="手写解析器可控，但边界分支最容易漏；正则上手快，复杂语法会迅速变得难读、报错也笼统；Nom 这类组合子小而可单测，适合协议帧、坐标、颜色、配置项；要描述一整套语言语法，再看 `pest`（独立 PEG 文件）或 `lalrpop`（类 Yacc）。另外注意 `tag` 返回的是闭包，要再接一次输入；元组上的 `.parse()` 来自 Nom 的 `Tuple` trait，标准库里查不到。" />
+
+<Quiz no="49-4" q="Nom 的 parser 为什么返回 `(剩余输入, 解析结果)` 而不只是结果？" :options='["为了让代码更长", "便于把剩余输入交给下一个 parser 继续解析，支持组合与流式处理", "因为 Rust 不支持返回单个值", "为了绕过所有权检查"]' answer="1" explain="交回剩余输入是组合子能无限拼接的基础，也是 Nom 适合流式解析、能做零拷贝的原因。" />
+
 ## 扩展挑战
 
 - 用 `sqlparser` 替换手写解析器，比较 AST 的复杂度。

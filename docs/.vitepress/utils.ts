@@ -10,7 +10,7 @@ export interface Lesson { path: string; title: string; stage: Stage }
  * - 66 讲 = 课程讲次口径，用于总目录、首页统计与阶段划分
  *   （L0 3 / L1 5 / L2 7 / L3 15 / L4 8 / L5 28）。
  * - LESSONS = 可打卡页面口径（76 项）：66 讲一讲一页，一个页面一条记录，
- *   另含阶段导览、场景总览、目录与练习页。
+ *   另含阶段导览、场景总览、目录、练习页，以及 1 个不计入讲次的 L2 → L3 过渡页。
  * 66 讲与 76 项不相等，是因为后者额外计入了非讲次的导览与练习页。
  */
 export const LESSONS: Lesson[] = [
@@ -31,7 +31,8 @@ export const LESSONS: Lesson[] = [
   { path: '/basics/control-flow', title: '第 12 讲 控制流 if / loop / while / for', stage: 'L2' },
   { path: '/basics/match-basics', title: '第 13 讲 match 与模式匹配入门', stage: 'L2' },
   { path: '/basics/cargo', title: '第 14 讲 Cargo 与项目结构', stage: 'L2' },
-  { path: '/basics/ownership-first-look', title: '所有权初体验', stage: 'L2' },
+  { path: '/basics/capstone', title: '第 15 讲 阶段综合：成绩统计', stage: 'L2' },
+  { path: '/basics/ownership-first-look', title: '阶段过渡 · 所有权初体验', stage: 'L2' },
   { path: '/core/', title: '阶段三导览', stage: 'L3' },
   { path: '/core/ownership', title: '第 16 讲 所有权三法则与 Move', stage: 'L3' },
   { path: '/core/copy-drop', title: '第 17 讲 Copy、Clone 与自动 drop', stage: 'L3' },
@@ -42,6 +43,7 @@ export const LESSONS: Lesson[] = [
   { path: '/core/lifetime-annotations', title: '第 22 讲 生命周期标注与省略规则', stage: 'L3' },
   { path: '/core/struct-enum', title: '第 23 讲 struct、impl 与方法', stage: 'L3' },
   { path: '/core/enums', title: '第 24 讲 enum、Option 与 Result', stage: 'L3' },
+  { path: '/core/patterns', title: '第 25 讲 模式匹配进阶', stage: 'L3' },
   { path: '/core/collections', title: '第 26 讲 集合容器 Vec / HashMap', stage: 'L3' },
   { path: '/core/error-handling', title: '第 27 讲 错误处理', stage: 'L3' },
   { path: '/core/traits', title: '第 28 讲 Trait：定义与实现', stage: 'L3' },
@@ -62,13 +64,18 @@ export const LESSONS: Lesson[] = [
   { path: '/projects/mini-grep', title: '第 40 讲 mini-grep', stage: 'L5' },
   { path: '/projects/scrape-url', title: '第 41 讲 网页抓取工具', stage: 'L5' },
   { path: '/projects/todo-cli', title: '第 42 讲 待办清单', stage: 'L5' },
+  { path: '/projects/cli-engineering', title: '第 43 讲 CLI 工程化', stage: 'L5' },
   { path: '/projects/image-server', title: '第 44 讲 图片服务器', stage: 'L5' },
   { path: '/projects/sql-data-tool', title: '第 49 讲 SQL / CSV 工具', stage: 'L5' },
+  { path: '/projects/data-engineering', title: '第 50 讲 数据工程', stage: 'L5' },
   { path: '/projects/mpsc-channel', title: '第 51 讲 手写 MPSC', stage: 'L5' },
+  { path: '/projects/actor', title: '第 52 讲 Actor 模型', stage: 'L5' },
+  { path: '/projects/ffi', title: '第 53 讲 unsafe 与 FFI', stage: 'L5' },
   { path: '/projects/kv/', title: 'KV Server 总览', stage: 'L5' },
   { path: '/projects/kv/1-memory', title: '第 45 讲 KV 第 1 步', stage: 'L5' },
   { path: '/projects/kv/2-network', title: '第 46 讲 KV 第 2 步', stage: 'L5' },
   { path: '/projects/kv/3-async', title: '第 47 讲 KV 第 3 步', stage: 'L5' },
+  { path: '/projects/network-advanced', title: '第 48 讲 网络编程进阶', stage: 'L5' },
   { path: '/projects/kv/4-refactor', title: '第 55 讲 KV 第 4 步', stage: 'L5' },
   { path: '/projects/kv/5-production', title: '第 56 讲 KV 第 5 步', stage: 'L5' },
   { path: '/projects/pyo3', title: '第 54 讲 PyO3 扩展', stage: 'L5' },
@@ -83,13 +90,6 @@ export const LESSONS: Lesson[] = [
   { path: '/projects/grpc', title: '第 64 讲 tonic gRPC 微服务', stage: 'L5' },
   { path: '/projects/edge', title: '第 65 讲 边缘与 Serverless', stage: 'L5' },
   { path: '/projects/embedded', title: '第 66 讲 嵌入式与图形', stage: 'L5' },
-  { path: '/basics/capstone', title: '第 15 讲 阶段综合：成绩统计', stage: 'L2' },
-  { path: '/core/patterns', title: '第 25 讲 模式匹配进阶', stage: 'L3' },
-  { path: '/projects/cli-engineering', title: '第 43 讲 CLI 工程化', stage: 'L5' },
-  { path: '/projects/network-advanced', title: '第 48 讲 网络编程进阶', stage: 'L5' },
-  { path: '/projects/data-engineering', title: '第 50 讲 数据工程', stage: 'L5' },
-  { path: '/projects/actor', title: '第 52 讲 Actor 模型', stage: 'L5' },
-  { path: '/projects/ffi', title: '第 53 讲 unsafe 与 FFI', stage: 'L5' },
 ]
 
 export const STAGE_LABEL: Record<Stage, string> = {

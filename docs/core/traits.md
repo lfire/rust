@@ -82,7 +82,7 @@ impl Storage for CounterTable {
 }
 ```
 
-`type Value` 由实现方指定，调用方写 `MemTable::Value` 就知道拿到什么。相比再加一个泛型参数 `Storage<T>`，关联类型表达的是「**一个实现只对应一种值类型**」，语义更准确，签名也更短。这正是 [KV 第 1 步](/projects/kv/1-memory.md) 里 `Storage` trait 的原型。
+`type Value` 由实现方指定，调用方写 `MemTable::Value` 就知道拿到什么。相比再加一个泛型参数 `Storage<T>`，关联类型表达的是「**一个实现只对应一种值类型**」，语义更准确，签名也更短。[KV 第 1 步](/projects/kv/1-memory.md) 的 `Storage` 用的是同一套「用 trait 隔离实现」思路，只是那里直接返回具体类型，没有用关联类型。
 
 ## 三、孤儿规则
 
@@ -127,6 +127,85 @@ fn main() {
 <Compare title="派生与手写" :panels='[{"label":"derive（自动）","code":"#[derive(Debug, Clone)]\nstruct P { x: i32 }","note":"字段都实现了该 trait 才能派生"},{"label":"手写 impl（可控）","code":"impl std::fmt::Display for P {\n    fn fmt(&self, f: &mut Formatter)\n      -&gt; fmt::Result {\n        write!(f, \"P({})\", self.x)\n    }\n}","note":"Display 没有 derive，必须手写"}]' note="Debug 能派生，Display 不能 —— 因为「用户看见长什么样」需要人来定义。" />
 
 <Callout type="warn" title="派生不是免费的" text="`#[derive(Clone)]` 要求**所有字段**都实现 `Clone`；只要有一个字段不满足，整行就编译失败。同理 `Copy` 要求全部字段 Copy。看到 `the trait bound ... is not satisfied`，先去检查字段类型。" />
+
+### 把常用 trait 再拆细一层
+
+上面那张表是速查，真正容易混的是**语义边界**。按用途分四组看，写库代码时就不必每次翻文档。
+
+#### 1. 转换类：`From` / `Into` / `AsRef` / `ToOwned` / `ToString`
+
+| 写法 | 方向 | 所有权 | 关键点 |
+| --- | --- | --- | --- |
+| `From::from(x)` | 别的类型 → 自己 | 消耗入参 | **只实现 `From`**，`Into` 由标准库的 blanket impl 自动得到 |
+| `x.into()` | 自己 → 目标类型 | 消耗 `x` | 目标类型常靠标注推断：`let p: Point = (1, 2).into();` |
+| `AsRef::as_ref()` | `&self` → `&T` | 只借用 | 要**显式**调用，泛型约束写 `S: AsRef<str>` 就能同时收 `String` / `&String` / `&str` |
+| `to_owned()` | `&T` → 拥有所有权的 `T` | 新分配 | `Clone` 的宽泛版：`let s: String = "hi".to_owned();` |
+| `to_string()` | 任意值 → `String` | 新分配 | 因为有 `impl<T: Display> ToString for T`，**实现 `Display` 就免费得到**，不要手写 `ToString` |
+
+```rust
+struct Point { x: i32, y: i32 }
+
+impl From<(i32, i32)> for Point {
+    fn from((x, y): (i32, i32)) -> Self { Point { x, y } }
+}
+
+fn greet<S: AsRef<str>>(s: S) -> String { format!("hi, {}", s.as_ref()) }
+
+fn main() {
+    let p: Point = (1, 2).into();       // 靠 From 自动得到的 Into
+    println!("{} {}", p.x, greet(String::from("Rust")));
+    println!("{}", greet("Rust"));      // 同一个函数也收 &str
+}
+```
+
+`Display` 和 `ToString` 的分工值得记牢：`Display` 定义「给人看长什么样」，必须手写 `fmt`；`ToString` 只是把它变成 `String` 的便利方法。`Debug` 反而可以直接 `#[derive(Debug)]`，配 `{:?}` 或美化的 `{:#?}`。
+
+#### 2. 比较与排序：`PartialEq` / `Eq` / `PartialOrd` / `Ord`
+
+| trait | 提供 | 额外要求 |
+| --- | --- | --- |
+| `PartialEq` | `==` / `!=` | 只要求对称、传递 |
+| `Eq` | 标记「完全相等」 | 还要求自反性 `a == a`；`f64` 因 `NaN != NaN` **只有 `PartialEq`** |
+| `PartialOrd` | `<` `<=` `>` `>=` | 部分有序 |
+| `Ord` | 严格全序 | 同时要求 `Eq + PartialOrd`；`f64` 没有 `Ord` |
+
+`slice::sort()` 要求 `T: Ord`，`BTreeMap` / `BTreeSet` 的 key 也一样 —— 浮点排不了序，根源就在这里（需要自定义比较时用 `sort_by`）。派生时四个常常一起写：`#[derive(PartialEq, Eq, PartialOrd, Ord)]`。
+
+#### 3. 运算符重载：`std::ops`
+
+`+`、`-`、`*`、索引等运算符都对应 `std::ops` 下的 trait，给自己的类型实现即可：
+
+```rust
+use std::ops::Add;
+
+#[derive(Debug, Clone, Copy, PartialEq)]
+struct Point { x: i32, y: i32 }
+
+impl Add for Point {
+    type Output = Point;
+    fn add(self, rhs: Point) -> Point {
+        Point { x: self.x + rhs.x, y: self.y + rhs.y }
+    }
+}
+
+fn main() {
+    println!("{:?}", Point { x: 1, y: 2 } + Point { x: 3, y: 4 });
+}
+```
+
+`type Output` 是关联类型（本讲第二节刚讲过），它让「相加结果是什么类型」由实现方决定，而不是写死在 trait 里。
+
+#### 4. 隐式与显式：`Deref` / `AsRef` / `Borrow`
+
+| trait | 触发方式 | 主要用途 |
+| --- | --- | --- |
+| `Deref` | `&`、`.` 自动触发 | `&String` 自动变 `&str`、`&Vec<T>` 自动变 `&[T]`；不要拿它模拟继承 |
+| `AsRef` | 显式 `as_ref()` | 函数参数要兼容多种字符串 / 字节类型，且希望调用点看得见转换 |
+| `Borrow` | 显式，语义更严格 | 让 `HashMap<String, V>` 能用 `&str` 查；要求借用与所有权值的哈希、相等性一致 |
+
+一句话记：**`Deref` 是隐式的、省事的；`AsRef` 是显式的、清楚的**。库代码里优先选 `AsRef`，少一点「类型怎么就变了」的意外。
+
+<Quiz no="28-5" q="想让函数同时接收 `String`、`&String` 和 `&str`，参数约束最合适的是？" :options='["`T: Display`", "`S: AsRef<str>`", "`T: Into<String>`（且不消耗入参）", "`T: Deref`"]' answer="1" explain="`AsRef<str>` 三者都实现，且只借用不转移所有权。`Into<String>` 会消耗入参，`Display` 与字符串视图无关，`Deref` 不该用作函数约束。" />
 
 ## 五、trait 作为接口：为什么 L5 离不开它
 

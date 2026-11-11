@@ -9,7 +9,7 @@ description: 用 sqlx 访问关系数据库、用 DataFusion 对 CSV/Parquet 做
 
 [第 49 讲 SQL / CSV 查询工具](/projects/sql-data-tool.md) 自己写了个教学级 AST 执行器。真实项目里，两条路径各有成熟工具：**要连数据库做增删改查用 sqlx，要对文件做聚合分析用 DataFusion**。这一讲把两者都跑一遍，并说清什么时候该用哪个。
 
-## 两条数据路径
+## 导读：两条数据路径
 
 | 维度 | OLTP（sqlx / diesel） | OLAP（DataFusion / Polars） |
 | --- | --- | --- |

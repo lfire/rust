@@ -113,7 +113,7 @@ mod tests {
 
 <Quiz no="14-2" q="想在 main.rs 里使用 math.rs 中的函数，需要哪两件事？" :options='["用 mod math; 声明模块", "被调函数需要用 pub 标记（跨模块可见）", "可以用 use 把路径引入作用域", "必须把 math.rs 改名为 main.rs"]' answer="0,1,2" multi="true" explain="mod 声明模块、pub 开放可见性、use 简化路径，三者各司其职。" />
 
-<Exercise title="给项目加个模块" task="在 cargo 项目里新建 src/greet.rs，写一个 pub fn hello(name: &str) 返回一句问候字符串，然后在 main.rs 里用 mod 和 use 调用它，最后跑 cargo run。" hints='["跨模块函数要写 pub", "参数借用一个字符串切片即可，本节照抄签名就行", "返回值类型写成 String，用 format! 宏拼接"]' solution="// src/greet.rs\npub fn hello(name: &str) -> String {\n    format!(&quot;你好，{}！欢迎学习 Rust。&quot;, name)\n}\n\n// src/main.rs\nmod greet;\nuse greet::hello;\n\nfn main() {\n    println!(&quot;{}&quot;, hello(&quot;小明&quot;));\n}" explain="这里第一次出现 &str 参数和 String 返回值，L3 会解释它们背后的所有权规则。" />
+<Exercise title="给项目加个模块" task="在 cargo 项目里新建 src/greet.rs，写一个 pub fn hello(name: &str) 返回一句问候字符串，然后在 main.rs 里用 mod 和 use 调用它，最后跑 cargo run。" hints='["跨模块函数要写 pub", "参数借用一个字符串切片即可，本节照抄签名就行", "返回值类型写成 String，用 format! 宏拼接"]' solution="// src/greet.rs\npub fn hello(name: &str) -> String {\n    format!(&quot;你好，{}！欢迎学习 Rust。&quot;, name)\n}\n\n// src/main.rs\nmod greet;\nuse greet::hello;\n\nfn main() {\n    println!(&quot;{}&quot;, hello(&quot;小明&quot;));\n}" explain="沿用第 10 讲的 &str 参数与 String 返回值；背后的所有权规则会在 L3 展开。" />
 
 ## 小结
 

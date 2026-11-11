@@ -7,7 +7,7 @@ description: 用 thread::spawn 创建线程、理解 move 闭包为什么必需�
 
 # 第 32 讲 · 线程与 Send
 
-Rust 标准库自带 1:1 的操作系统线程，开箱即用。
+上一讲从类型系统讲了 Send / Sync 与 thread::spawn 的约束；这一讲落到写法本身。Rust 标准库自带 1:1 的操作系统线程，开箱即用。
 
 ## 第一个多线程程序
 

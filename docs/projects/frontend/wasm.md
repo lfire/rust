@@ -99,7 +99,7 @@ extern "C" {
 | `nodejs` | Node.js（CommonJS） | `require('./pkg')` |
 | `no-modules` | 老式页面、不能用 ES Module 的环境 | 全局 `wasm_bindgen` 对象 |
 
-本教程的示例用 `web`，因为不需要额外工具就能看到链路；做 SPA 或前端工程时（[第 60 讲](/projects/frontend/leptos.md)、[第 63 讲](/projects/frontend/fullstack.md)）通常用 `bundler`；要在 Node 里跑测试或工具链插件（[第 62 讲](/projects/frontend/node-addon.md)）则选 `nodejs`。选错 target 的典型症状是「`init is not a function`」或打包器找不到 `.wasm`。
+本教程的示例用 `web`，因为不需要额外工具就能看到链路；做 SPA 或前端工程时（[第 60 讲](/projects/frontend/leptos.md)、[第 63 讲](/projects/frontend/fullstack.md)）通常用 `bundler`；要在 Node 里跑 WASM 测试则选 `nodejs`；要做 Node 原生插件是另一条路径（见 [第 62 讲](/projects/frontend/node-addon.md)）。选错 target 的典型症状是「`init is not a function`」或打包器找不到 `.wasm`。
 
 ## 四、JS ↔ Rust 类型映射速查
 
@@ -184,4 +184,4 @@ pub fn init_panic_hook() {
 
 <CheckList id="wasm-toolchain-check" title="学完本讲，你应该能…" :items='["说清 rustc / wasm-bindgen / wasm-pack / wasm-opt 各管什么", "写出可用的 Cargo.toml 并解释 cdylib 的作用", "按使用场景选出 web / bundler / nodejs / no-modules", "看懂 JS ↔ Rust 类型映射表", "成功产出 pkg/ 并知道里面四个文件是什么", "给开发期接上 panic hook 与测试"]' />
 
-[上一讲：Rust × 前端场景总览 →](/projects/frontend/) · [下一讲：第 59 讲 实战：Rust 计算模块加速前端 →](/projects/frontend/wasm-practice.md)
+[按讲次顺序：第 57 讲 软件架构 →](/projects/production.md) · [按前端专题线：场景总览 →](/projects/frontend/) · [下一讲：第 59 讲 实战：Rust 计算模块加速前端 →](/projects/frontend/wasm-practice.md)

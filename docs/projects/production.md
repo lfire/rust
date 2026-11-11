@@ -36,6 +36,21 @@ profile = "minimal"
 
 <Callout type="tip" title="为什么锁工具链版本" text="Rust 每六周一个版本。不锁版本时，同一份代码在同事机器上可能因为新版编译器的 lint 变化而报不同结果。锁住之后，升级变成一次有计划的、可评审的改动。" />
 
+### lint 的四档强度
+
+CI 里的 `clippy -D warnings` 只是其中一档。Rust 用属性控制 lint 级别，从松到严共四档：
+
+| 属性 | 效果 | 典型用途 |
+| --- | --- | --- |
+| `#[allow(...)]` | 允许，不报警 | 原型期临时压掉 `dead_code` |
+| `#[warn(...)]` | 报警但继续编译 | 默认级别，提醒注意 |
+| `#[deny(...)]` | 直接变成编译错误 | 团队约定不许出现的写法 |
+| `#[forbid(...)]` | 严格禁止，且**不能被内层 `allow` 覆盖** | 安全边界，如 `forbid(unsafe_code)` |
+
+写在 crate 根用 `#![...]`（作用于整个 crate），写在模块或条目上用 `#[...]`；常见 lint 名有 `unused_variables`、`dead_code`、`unsafe_code`、`unused_imports`。原型期可以临时用 `#![allow(dead_code)]` 放水，但项目走上正轨后要逐条删掉 —— 让警告重新变成反馈，而不是背景噪音。
+
+<Callout type="tip" title="和 CI 的关系" text="本地用 allow 压掉的警告，CI 里的 `clippy -D warnings` 也会一并放过。所以全局 allow 要有明确理由和清理计划；想硬性兜底，用 forbid，或在 CI 命令里统一加上 `-D warnings`。" />
+
 ## 二、文档：三种不同用途
 
 | 类型 | 写在哪 | 给谁看 |
@@ -168,6 +183,34 @@ cargo tree -d                      # 找出重复依赖
 <Callout type="tip" title="少依赖也是一种架构能力" text="每加一个 crate，就多一份升级、安全公告与许可证的长期成本。能用标准库解决的别引依赖；真的要引，优先选「依赖树浅、feature 可裁剪、维护活跃」的那个，并把选择理由写进 ADR。" />
 
 <Quiz no="57-4" q="给一个要发布的库选错误类型，哪种做法更合适？" :options='["用 anyhow，把具体错误擦掉", "用 thiserror 定义具体错误枚举，让调用方能 match", "全部转成字符串", "直接 panic"]' answer="1" explain="库要暴露可匹配的错误类型（thiserror）；应用层才适合用 anyhow 做错误聚合与上下文。" />
+
+### 更专门的方向
+
+本站九类场景是按**宿主维度**组织的，另有几个垂直方向没有单独开讲。它们不需要新的语言知识，仍然用上面的选型六问判断，只是领域门槛更高：
+
+| 方向 | 代表 crate | 什么时候会用到 |
+| --- | --- | --- |
+| AI 推理 | `candle-core`、`burn` | 本地或 Serverless 跑量化模型（`gguf` / `safetensors`），不依赖 Python 运行时、产物小 |
+| 计算机视觉 | `candle` + YOLOv8 模型 | 物体 / 姿势探测，边缘节点上做推理 |
+| 原生 GUI | `slint` | 不用 WebView 的桌面与嵌入式面板（[第 61 讲](/projects/frontend/tauri.md) 有对比） |
+| 游戏与图形 | `bevy`、`wgpu` | 用 ECS 组织游戏状态（[第 66 讲](/projects/embedded.md)） |
+| 解析器 | `nom`、`pest`、`lalrpop` | 协议帧、配置、DSL（[第 49 讲](/projects/sql-data-tool.md) 有组合子思路） |
+| Web 中间件 | `tower`、`tower-http`、`axum` | 日志、限流、超时、CORS 分层挂接（[第 44 讲](/projects/image-server.md)） |
+| 模型周边 | `tokenizers`、`safetensors` | 分词与权重加载，HuggingFace 生态里的 Rust 基础设施 |
+
+其中 AI / 视觉这一支离日常业务最远，值得多说两句。把「模型」当成一种特殊的数据文件，就很好理解 Rust 在这里的位置：权重是几十 MB 到几 GB 的只读数据，推理是加载后反复做矩阵运算 —— 正好是 Rust 擅长的部分。
+
+| 环节 | 常见形态 | 要点 |
+| --- | --- | --- |
+| 模型文件 | `gguf`（llama.cpp 量化格式）、`safetensors`（HuggingFace 推的格式，解析由 Rust 实现） | 下载的是训练成品，用来**推理**而非训练 |
+| 量化 | 权重从 16 位压到 8 / 4 / 2 位 | 7B 模型 4bit 可压到 4G 以内，代价是精度 |
+| 分词 | `tokenizer.json` + `tokenizers` crate | 文本 → token id → Tensor，输出侧再 decode 回文字 |
+| 设备 | CPU / CUDA / Metal | 靠 `--features cuda` 或 `metal` 切换；纯 CPU 推理常慢到每秒一两个 token |
+| 视觉模型 | YOLOv8 的 N / S / M / L / X 五档 | 越小越快、精度越低；实时监控多用 S 档；输入统一规约到 640×640 |
+
+一次文本生成的最小流程：加载权重与 tokenizer → 拼 prompt 并 encode → 送进 `model.forward` 得 logits → 采样出下一个 token → decode 并循环，直到结束符或长度上限。你会发现用的还是本教程讲过的东西：`clap` 管命令行、`anyhow` 聚合错误、`Result` 处理模型下载失败 —— 新东西主要是领域概念，不是语言本身。
+
+<Callout type="note" title="别急着都学" text="这些方向的共同点不是「语法更难」，而是「领域知识更重」。先把本讲的仓库规范、上线清单和选型六问用熟，等真碰到需求再按方向查资料，比提前铺开有效得多。" />
 
 ## 八、持续精进：66 讲之后的进阶地图
 

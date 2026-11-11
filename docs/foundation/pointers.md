@@ -113,7 +113,7 @@ fn main() {
 }
 ```
 
-这段在 C 里能编过、运行时随机出错；Rust 直接不给编译。规则本身不复杂，但它撑起了后面整章：[第 18 讲](/core/borrowing.md) 讲借用规则、[第 19 讲](/core/mutable-borrow.md) 讲可变借用、[第 21 讲](/core/lifetime.md) 讲生命周期怎么标注。
+这段在 C 里能编过、运行时随机出错；Rust 直接不给编译。规则本身不复杂，但它撑起了后面整章：[第 18 讲](/core/borrowing.md) 讲借用规则、[第 19 讲](/core/mutable-borrow.md) 讲可变借用、[第 21 讲](/core/lifetime.md) 建立生命周期直觉、[第 22 讲](/core/lifetime-annotations.md) 讲标注与省略规则。
 
 <Predict no="06-1" q="下面这段输出什么？" :options='["5", "一个地址", "编译错误：x does not live long enough", "0"]' answer="2" output="error[E0597]: `x` does not live long enough" explain="x 在内层块结束时销毁，r 却想活到外面；编译器拒绝生成悬空引用。" />
 

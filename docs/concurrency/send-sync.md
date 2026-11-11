@@ -128,7 +128,7 @@ fn main() {
 
 <Quiz no="31-3" q="关于 Send / Sync 的自动推导，哪些说法正确？" :options='["结构体所有字段 Send，它就自动 Send", "Rc 不是 Send，因为计数非原子", "RefCell 不是 Sync", "手动实现 Send 是安全操作，不需要 unsafe"]' answer="0,1,2" multi="true" explain="Send/Sync 是 unsafe trait，手动实现必须写 unsafe impl 并自己证明安全（见第 53 讲 FFI）。" />
 
-<Quiz no="31-4" q="`thread::spawn` 要求闭包满足 `+ &static`，主要是为了？" :options='["提升性能", "新线程可能比当前函数活得久，闭包不能借用栈上局部变量", "让闭包只能调用一次", "避免闭包过大"]' answer="1" explain="配合 move 把所有权交进闭包，是满足这个 bound 最常规的做法。" />
+<Quiz no="31-4" q="`thread::spawn` 要求闭包满足 `+ 'static`，主要是为了？" :options='["提升性能", "新线程可能比当前函数活得久，闭包不能借用栈上局部变量", "让闭包只能调用一次", "避免闭包过大"]' answer="1" explain="配合 move 把所有权交进闭包，是满足这个 bound 最常规的做法。" />
 
 <Exercise title="修好并发计数器" task="下面代码有两个问题：用了 `Rc` 且闭包借用了局部变量。请改成 10 个线程各加 1 次、最终输出 10 的版本；再说明如果改成 `Arc<AtomicUsize>` 可以省掉什么。" hints='["Rc 换 Arc，内部还需要内部可变性", "Arc&lt;Mutex&lt;i32&gt;&gt; 或 Arc&lt;AtomicUsize&gt;", "每个线程 clone 一份 Arc，最后 join 全部 handle"]' solution="use std::sync::{Arc, Mutex};\nuse std::thread;\n\nfn main() {\n    let c = Arc::new(Mutex::new(0));\n    let mut handles = vec![];\n    for _ in 0..10 {\n        let c = Arc::clone(&c);\n        handles.push(thread::spawn(move || {\n            *c.lock().unwrap() += 1;\n        }));\n    }\n    for h in handles { h.join().unwrap(); }\n    println!(&quot;{}&quot;, *c.lock().unwrap());  // 10\n}" explain="AtomicUsize 用一条 fetch_add 完成读改写，可以省掉 Mutex 与显式加锁，但只适用于单变量的原子操作。" />
 

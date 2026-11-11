@@ -51,6 +51,8 @@ pageClass: curriculum-page
 | 14 | Cargo、模块与第一个依赖 | ★★ | [Cargo 与项目结构](/basics/cargo.md) | ✅ |
 | 15 | 阶段综合：写一个成绩统计程序 | ★★ | [阶段综合](/basics/capstone.md) | ✅ |
 
+<Callout type="note" title="编号之外的一页过渡" text="L2 与 L3 之间还有一页 [所有权初体验](/basics/ownership-first-look.md)，用交互实验台先建立直觉，**不计入 66 讲编号**；可选，跳过不影响 01→66 的讲次连续性。" />
+
 ## L3 · 核心机制（16–30）
 
 | # | 讲名 | 难度 | 对应页面 | 状态 |

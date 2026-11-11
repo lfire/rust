@@ -15,7 +15,7 @@ description: 用 axum 搭一个支持缩略图与缓存的 HTTP 图片服务，�
 - `Result` 映射到 HTTP 响应（404 / 400 / 500）
 - 图片解码 → 缩放 → 编码的完整数据流
 - 用 `Arc<Mutex<HashMap<...>>>` 做进程内缓存
-- 把「协议层 / 服务层 / 存储层」分开的初体验（下一讲会正式拆开）
+- 用 `AppState` 集中管理共享状态（下一讲会把它拆成 trait 抽象的三层）
 
 <ConceptDiagram type="pipeline" title="请求 → 路由 → 参数校验 → 缓存查询 → 图片处理 → 响应"
   labels="HTTP 请求::路由 / 校验|缓存查询::命中即返回|图片处理::缩放 / 滤镜|响应::Content-Type"
@@ -158,6 +158,34 @@ curl -i "http://127.0.0.1:3000/img/missing.png"     # 404
 <Predict no="44-3" q="请求 `/img/../../etc/passwd` 时，示例会？" :options='["读取系统文件", "返回 400 非法文件名", "返回 404", "panic"]' answer="1" output="400 Bad Request" explain="路径里含 .. 被显式拒绝 —— 这就是最基本的路径穿越防护。" />
 
 <Exercise title="加一个格式参数" task="给 Params 加 `fmt: Option&lt;String&gt;`，支持 png / jpeg 两种输出；同时把 fmt 纳入缓存 key，并设置正确的 Content-Type。" hints='["用 match fmt.as_deref() 选择 ImageFormat", "Content-Type 在缓存命中分支里也要设置", "缓存 key 变成 name:w:h:fmt"]' solution="let fmt = p.fmt.clone().unwrap_or_else(|| &quot;png&quot;.into());\nlet key = format!(&quot;{}:{}:{}:{}&quot;, name, w, h, fmt);\nlet format = match fmt.as_str() {\n    &quot;jpeg&quot; | &quot;jpg&quot; => image::ImageFormat::Jpeg,\n    _ => image::ImageFormat::Png,\n};\n// 缓存命中与未命中分支都要带上对应 Content-Type" explain="凡是影响响应体或响应头的参数，都必须进缓存键。" />
+
+## 生产级 Axum 的四块积木
+
+上面的单文件示例只用了 Router + Handler。真实服务通常还要补齐这四块：
+
+| 积木 | 作用 | 典型写法 |
+| --- | --- | --- |
+| Extractor | 按类型从请求里取参数，解析失败自动回 4xx | `Query<Params>` / `Json<T>` / `Path<u32>` |
+| State | 把连接池、配置等共享状态注入 handler | `State<AppState>` + `.with_state(pool)` |
+| IntoResponse | 统一成功与失败的出口 | `Json` / `Html` / `(StatusCode, String)` / 自定义 `AppError` |
+| Fallback | 没有任何路由匹配时的兜底 | `.fallback(handler_404)` |
+
+```rust
+let app = Router::new()
+    .route("/img", get(resize))
+    .route("/health", get(health))
+    .fallback(handler_404)
+    .layer(TraceLayer::new_for_http())
+    .with_state(state);
+```
+
+**中间件不在 axum 里**，它复用 `tower` / `tower-http`：把一次请求抽象成 `Service`（请求 → 响应），`Layer` 接收一个 Service 再包成另一个。`TraceLayer`（结构化日志）、`CorsLayer`、`CompressionLayer`、`TimeoutLayer` 可以挂在全局 Router、某个嵌套 Router 或单个 handler 上，粒度自己选。
+
+几个上线前常补的点：想自定义参数解析失败的信息，就把 Extractor 的结果写成 `Result<T, XxxRejection>` 拿具体原因；模板渲染用 Askama 这类**编译期检查模板**的库；数据库连接用 `bb8` / `deadpool` 放进 State，别每个请求新建连接。还有一条容易踩的：**消耗请求体的 Extractor（`Json`、`Bytes`）必须放在 handler 参数的最后**，否则后面的 Extractor 拿不到 body；其余 Extractor 之间顺序不影响意图，这正是 Axum「声明式参数」的边界。
+
+<Callout type="tip" title="日志别用 println!" text="异步服务里请用 `tracing` + `tracing-subscriber`，用 `RUST_LOG` 控制级别；它带 span，能把一次请求的多条日志串起来，这是 `println!` 做不到的。Handler 若需返回两种以上不同的响应类型，显式调 `.into_response()` 统一出口。" />
+
+<Quiz no="44-4" q="axum 的中间件能力主要来自哪里？" :options='["axum 自带的 middleware 模块", "tower / tower-http 的 Service 与 Layer", "hyper 直接提供", "必须自己写 unsafe 实现"]' answer="1" explain="axum 专注路由与 Handler，中间件复用 tower 生态，因此也能和 hyper、tonic 共享同一套 Layer。" />
 
 ## 扩展挑战
 

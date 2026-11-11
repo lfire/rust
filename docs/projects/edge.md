@@ -178,7 +178,7 @@ echo -e "rust\nrust\ngo" | wasmtime target/wasm32-wasip1/release/edge-guard.wasm
 
 ## 扩展挑战
 
-- 用 `wasmtime` 在自己服务里嵌一个 WASI 沙箱，给第三方插件做隔离执行（对照 [第 44 讲 图片服务器](/projects/image-server.md) 的插件化）。
+- 用 `wasmtime` 在自己服务里嵌一个 WASI 沙箱，给第三方插件做隔离执行（可对照 [第 44 讲](/projects/image-server.md) 的 tower 中间件分层）。
 - 把 [第 59 讲 前端 WASM 实战](/projects/frontend/wasm-practice.md) 与边缘 WASM 抽成共享 crate，体会「同一份逻辑、两种宿主」。
 - 用 `wasm-component-model` / WIT 定义宿主与模块的接口契约。
 - 加定时触发器（cron）与队列消费者，做完整的边缘数据管道。

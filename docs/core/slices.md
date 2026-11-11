@@ -95,7 +95,7 @@ assert!(s.get(0..2).is_none());
 let chars: Vec<char> = s.chars().collect();
 ```
 
-<Callout type="warn" title="索引访问在 Rust 里是「有风险」的" text="`v[第 10 讲]` 越界会 panic；`v.get(10)` 返回 `Option` 让你自己决定。字符串切片同理优先用 `s.get(a..b)`。Rust 把这类边界错误留在运行时（因为依赖数据），但给了你安全的选择。" />
+<Callout type="warn" title="索引访问在 Rust 里是「有风险」的" text="`v[10]` 越界会 panic；`v.get(10)` 返回 `Option` 让你自己决定。字符串切片同理优先用 `s.get(a..b)`。Rust 把这类边界错误留在运行时（因为依赖数据），但给了你安全的选择。" />
 
 ## 四、切片与借用规则
 
@@ -140,7 +140,7 @@ fn main() {
 
 <FillBlank tpl="fn total(nums: &amp;___&lt;i32&gt;) -&gt; i32 {\n    nums.iter().sum()\n}" answers="[i32]" hint="参数类型要能同时接数组和 Vec 的一段借用。" explain="完整类型是 &amp;[i32]，即 i32 切片。" />
 
-<Exercise title="写一个安全的截断函数" task="实现 `fn truncate(s: &str, max_chars: usize) -&gt; &str`：返回前 max_chars 个**字符**组成的切片，要求不 panic（中文也要正确）。提示：用 `char_indices` 找到第 max_chars 个字符的字节位置。" hints='["char_indices().nth(max_chars) 给出下一个字符的字节下标", "如果不足 max_chars 就返回整个 s", "返回值是 &str，借用自参数"]' solution="fn truncate(s: &amp;str, max_chars: usize) -&gt; &amp;str {\n    match s.char_indices().nth(max_chars) {\n        Some((byte_idx, _)) =&gt; &amp;s[..byte_idx],\n        None =&gt; s,\n    }\n}\n\nfn main() {\n    assert_eq!(truncate(&quot;你好世界&quot;, 2), &quot;你好&quot;);\n    assert_eq!(truncate(&quot;hello&quot;, 10), &quot;hello&quot;);\n}" explain="char_indices 给出的是合法字符边界，所以切出来一定不会 panic。" />
+<Exercise title="写一个安全的截断函数" task="实现 `fn truncate(s: &str, max_chars: usize) -&gt; &str`：返回前 max_chars 个字符组成的切片，要求不 panic（中文也要正确）。提示：用 `char_indices` 找到第 max_chars 个字符的字节位置。" hints='["char_indices().nth(max_chars) 给出下一个字符的字节下标", "如果不足 max_chars 就返回整个 s", "返回值是 &str，借用自参数"]' solution="fn truncate(s: &amp;str, max_chars: usize) -&gt; &amp;str {\n    match s.char_indices().nth(max_chars) {\n        Some((byte_idx, _)) =&gt; &amp;s[..byte_idx],\n        None =&gt; s,\n    }\n}\n\nfn main() {\n    assert_eq!(truncate(&quot;你好世界&quot;, 2), &quot;你好&quot;);\n    assert_eq!(truncate(&quot;hello&quot;, 10), &quot;hello&quot;);\n}" explain="char_indices 给出的是合法字符边界，所以切出来一定不会 panic。" />
 
 ## 常见坑
 

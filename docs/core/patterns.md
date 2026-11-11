@@ -7,7 +7,7 @@ description: 解构、匹配守卫、@ 绑定、if let / let else、ref 与穷�
 
 # 第 25 讲 · 模式匹配进阶
 
-`match` 在 Rust 里不只是 switch。它更像是**「按形状拆包」**：一边判断值是哪种情况，一边把里面的数据绑定到变量。把这件事用熟，很多 `if + unwrap + 下标取值` 的样板代码会直接消失。
+`match` 在 Rust 里不只是 switch。它更像「按形状拆包」：一边判断值是哪种情况，一边把里面的数据绑定到变量。把这件事用熟，很多 `if + unwrap + 下标取值` 的样板代码会直接消失。
 
 ## 一、解构：一次把值拆开
 
@@ -117,6 +117,85 @@ fn main() {
 <FillBlank tpl="let Some(cfg) = load_config() ___ {\n    return;\n};" answers="else" hint="不匹配就必须提前离开的写法，关键字是 4 个字母。" explain="let else 的 else 块必须发散（return / break / panic），之后变量才保证可用。" />
 
 <Exercise title="用一次匹配解析命令" task="定义 `enum Cmd { Get(String), Set(String, i32), List, Quit }`，写 `fn run(cmd: Cmd) -&gt; String`，要求：Set 的 value 为负数时返回错误提示（用守卫），其余分支返回描述；再用 `if let` 单独处理 Quit 做一次对比。" hints='["Set(k, v) if *v &lt; 0 需要解引用，或改用 Set(k, v) if v &lt; 0 看绑定类型", "List 与 Quit 用简单分支", "if let Cmd::Quit = cmd 只匹配一种形状"]' solution="fn run(cmd: Cmd) -&gt; String {\n    match cmd {\n        Cmd::Get(k) =&gt; format!(&quot;GET {}&quot;, k),\n        Cmd::Set(k, v) if v &lt; 0 =&gt; format!(&quot;非法值 {}&quot;, v),\n        Cmd::Set(k, v) =&gt; format!(&quot;SET {} {}&quot;, k, v),\n        Cmd::List =&gt; &quot;LIST&quot;.into(),\n        Cmd::Quit =&gt; &quot;BYE&quot;.into(),\n    }\n}" explain="守卫分支要放在普通 Set 分支之前，否则会被先匹配掉。" />
+
+## 六、编译期的模式匹配：声明宏
+
+前面几节都在用 `match` 匹配**运行期的值**。Rust 还有一套在**编译期**做模式匹配的机制：宏。它接收的不是数据而是**代码**，按规则匹配后展开成另一段合法 Rust 代码，再交给编译器。`println!`、`vec!`、`#[derive(Debug)]` 背后都是它在工作。
+
+<Callout type="note" title="这一节是扩展，不属于所有权主线" text="宏是模式匹配思路的延伸，但和 L3 的所有权、借用、生命周期不是一条线。第一次读可以跳过去，等后面在 L5 项目里被 `#[derive]`、`#[tokio::main]` 绊住了再回来看，不会影响后续讲次。" />
+
+<Callout type="idea" title="为什么放在这一讲" text="`macro_rules!` 的规则本身就是模式：左边写要匹配的代码形状，右边写要生成的代码。`$x:expr` 像一个绑定，`$(...),*` 像对重复项的匹配。理解了解构与绑定，声明宏只是把同一套思路用在 token 上。" />
+
+### 第一个声明宏
+
+```rust
+macro_rules! add {
+    ($a:expr, $b:expr) => { $a + $b };  // 两个参数
+    ($a:expr)          => { $a };        // 边界：只有一个参数
+}
+
+fn main() {
+    println!("{}", add!(1, 2));
+    println!("{}", add!(7));
+}
+```
+
+宏里可以写多个分支，编译器按实参形状挑第一个匹配的。`$a:expr` 中的 `expr` 是**片段类型**，常见的还有：
+
+| 片段 | 匹配什么 | 片段 | 匹配什么 |
+| --- | --- | --- | --- |
+| `expr` | 表达式 | `ty` | 类型 |
+| `ident` | 标识符 | `path` | 路径 |
+| `stmt` | 语句 | `item` | 一个条目（函数、结构体等） |
+| `tt` | 单棵 token 树 | `literal` | 字面量 |
+
+生成代码时用 `$a` 引用捕获到的片段。
+
+### 重复模式：任意多个参数
+
+```rust
+macro_rules! add_all {
+    ( $($a:expr),* ) => {
+        {
+            0 $( + $a )*   // 用 0 开头，顺便处理「一个参数都没有」
+        }
+    };
+}
+
+fn main() {
+    println!("{}", add_all!());         // 0
+    println!("{}", add_all!(1, 2, 3));  // 6
+}
+```
+
+`$(...)` 包住可重复的部分，紧跟的符号决定次数：`*` 零到多次、`+` 一到多次、`?` 零或一次；分隔符（这里是逗号）也属于模式的一部分。调用时 `()`、`[]`、`{}` 都合法，习惯上列表用 `[]`、函数调用式用 `()`。
+
+### 让宏跨模块可用
+
+| 场景 | 写法 | 说明 |
+| --- | --- | --- |
+| 导出到当前 crate 根 | `#[macro_export] macro_rules! foo { ... }` | 不导出就只能在同一模块内、且定义在调用之前使用 |
+| 同 crate 内按路径调用 | `crate::foo!()` / `super::foo!()` | 宏也遵循模块路径 |
+| 别的 crate 引入 | `use mycrate::foo;` | 现代写法，用到哪个引哪个 |
+| 一次引入某 crate 全部宏 | `#[macro_use] extern crate mycrate;` | Rust 早期遗留写法，老代码里会见到 |
+
+想看清宏展开了什么，装 `cargo expand` 后运行 `cargo expand`，它会打印展开后的完整 Rust 代码 —— 这是学宏最有效的工具。
+
+### 过程宏：三种形态
+
+声明宏靠「模式匹配 + 模板替换」；过程宏则是**一段 Rust 程序**，直接读写 token 流，能力更强、编写门槛也更高。
+
+| 形态 | 写法 | 做什么 | 典型例子 |
+| --- | --- | --- | --- |
+| 派生宏 | `#[derive(Debug, Clone)]` | 给紧跟的类型自动生成 trait 实现 | `Debug`、`Clone`、`thiserror::Error`、`serde::Serialize` |
+| 属性宏 | `#[tokio::main]`、`#[test]` | 改写所标注的整个条目 | 把 `async fn main` 包进 runtime、注册测试 |
+| 函数宏 | `sql!(...)`、`html!(...)` | 像函数一样调用，甚至可以接受非 Rust 语法 | 在 Rust 代码里内嵌 SQL、模板 DSL |
+
+先做到**会用、能读懂**即可，自定义过程宏通常单独建一个 `proc-macro` crate，等真正需要造 DSL 时再深入。
+
+<Callout type="warn" title="别把宏当锤子" text="函数或泛型能简洁表达的，就别写宏。宏难调试、IDE 支持也弱，滥用会让代码难以理解；它真正适合的是消灭重复样板、接受变长参数、给类型批量加能力、以及造 DSL。另外注意 `#[macro_use]` 只会在老代码里遇到，新代码请显式 `use`。" />
+
+<Quiz no="25-3" q="`macro_rules!` 里 `$t:ty` 匹配的是什么？" :options='["一个类型", "一个表达式", "一个标识符", "一条语句"]' answer="0" explain="`ty` 匹配类型；表达式用 `expr`，标识符用 `ident`，语句用 `stmt`。" />
 
 ## 常见坑
 

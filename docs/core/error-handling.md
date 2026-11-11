@@ -19,7 +19,7 @@ panic!("这里不该发生");
 
 // 索引越界也会 panic
 let v = vec![1, 2, 3];
-// let x = v[第 10 讲];   // panic!
+// let x = v[10];   // panic!
 ```
 
 `panic!` 适合「程序写错了」，**不适合**处理用户输入或 IO 失败。后者要用 `Result`。
@@ -145,7 +145,36 @@ println!("{}", text);
 
 <FillBlank tpl="fn read() -&gt; Result&lt;String, std::io::Error&gt; {\n    let text = std::fs::read_to_string(&quot;a.txt&quot;)___;\n    Ok(text)\n}" answers="?" hint="把错误直接上交给调用方的运算符，只有一个字符。" explain="? 会在 Ok 时取出 String，在 Err 时提前返回。" />
 
-<Exercise title="把 unwrap 换成 ?" task="写函数 fn add_from_file(path: &str) -&gt; Result&lt;i32, Box&lt;dyn std::error::Error&gt;&gt;：读文件、去掉首尾空白、解析成 i32、再加 1。全程用 ?，不要用 unwrap。" hints='["parse::&lt;i32&gt;() 返回 Result，也能用 ?", "Box&lt;dyn Error&gt; 能容纳多种错误类型", "最后写 Ok(n + 1)"]' solution="use std::error::Error;\n\nfn add_from_file(path: &str) -> Result<i32, Box<dyn Error>> {\n    let text = std::fs::read_to_string(path)?;\n    let n: i32 = text.trim().parse()?;\n    Ok(n + 1)\n}\n\nfn main() {\n    match add_from_file(&quot;num.txt&quot;) {\n        Ok(v) => println!(&quot;结果是 {}&quot;, v),\n        Err(e) => eprintln!(&quot;失败：{}&quot;, e),\n    }\n}" explain="Box&lt;dyn Error&gt; 是学习阶段很好用的「万能错误类型」，L5 会换成 thiserror。" />
+<Exercise title="把 unwrap 换成 ?" task="写函数 fn add_from_file(path: &str) -&gt; Result&lt;i32, Box&lt;dyn std::error::Error&gt;&gt;：读文件、去掉首尾空白、解析成 i32、再加 1。全程用 ?，不要用 unwrap。" hints='["parse::&lt;i32&gt;() 返回 Result，也能用 ?", "Box&lt;dyn Error&gt; 能容纳多种错误类型", "最后写 Ok(n + 1)"]' solution="use std::error::Error;\n\nfn add_from_file(path: &str) -> Result<i32, Box<dyn Error>> {\n    let text = std::fs::read_to_string(path)?;\n    let n: i32 = text.trim().parse()?;\n    Ok(n + 1)\n}\n\nfn main() {\n    match add_from_file(&quot;num.txt&quot;) {\n        Ok(v) => println!(&quot;结果是 {}&quot;, v),\n        Err(e) => eprintln!(&quot;失败：{}&quot;, e),\n    }\n}" explain="Box&lt;dyn Error&gt; 是学习阶段很好用的「万能错误类型」，L5 的应用项目会改用 anyhow 聚合错误，只有写库时才用 thiserror。" />
+
+## 补充：错误系统的两块底座
+
+### 「不该发生」也有四种写法
+
+| 宏 | 传达的意图 | 用在 |
+| --- | --- | --- |
+| `panic!` | 程序无法继续 | 断言内部不变量被破坏 |
+| `todo!` | 这里要写，先占个位 | 开发期骨架；能编译能跑，执行到才 panic |
+| `unimplemented!` | 这个分支明确还没实现 | 比 `todo!` 语气更重，提醒调用方别依赖 |
+| `unreachable!` | 逻辑上不可能走到 | 已穷举的 match 分支、无限循环之后 |
+
+四个最终都会 panic，区别在**给读代码的人留下什么信息**。原型期用 `todo!` 很顺手，但合并前记得全仓搜一遍残留。
+
+### 编译器帮你盯着 `Result`
+
+`Result` 带 `#[must_use]`：调用后既不接收也不处理，编译器会报 `unused_must_use` 警告。这是把「可能失败」写进类型之后的最后一道保险。真想忽略，就写 `let _ = f();`，让「我确实不要这个结果」成为一次有意识的表态，而不是手滑。
+
+### `std::error::Error` 与错误链
+
+```text
+pub trait Error: Debug + Display {}   // 标准库定义（简化，示意用）
+```
+
+实现它要求同时有 `Debug`（通常 derive，第 23 讲用过）和 `Display`（手写，[第 28 讲](/core/traits.md) 会展开）—— 一个错误类型既要能给程序员看，也要能给人看。实现后才能塞进 `Box<dyn Error>` 或 `&dyn Error`，本讲练习里已经用过这个写法。注意 `Result<T, E>` 的 `E` **并不要求**实现 `Error` —— 自定义枚举一样能当错误类型。
+
+错误还可以带上下文链：`Error::source()` 返回下一层原因，`anyhow` 的 `Context` 就是在维护这条链；需要按原始类型分派时用 `downcast_ref::<MyError>()` 取回来。日志里只打最外层一句，排查时却能展开整条链，这才是「加上下文」的价值。
+
+<Quiz no="27-4" q="调用一个返回 `Result` 的函数却完全不接收返回值，会怎样？" :options='["编译直接失败", "触发 unused_must_use 警告", "自动调用 unwrap", "静默当作成功"]' answer="1" explain="Result 带 #[must_use]；想显式忽略就写 let _ = f();，把忽略变成有意识的选择。" />
 
 ## 小结
 

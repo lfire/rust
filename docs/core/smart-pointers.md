@@ -129,7 +129,7 @@ fn main() {
 | 能否拿引用 | 能 | 不能（只能整体拷贝进出） |
 | 适用 | 任意 T | Copy 类型 |
 
-`Rc<RefCell<T>>` 是单线程「多个所有者 + 都能改」的经典组合（[L5 手写 MPSC](/projects/mpsc-channel.md) 会用到类似思路）。
+`Rc<RefCell<T>>` 是单线程「多个所有者 + 都能改」的经典组合（[L5 手写 MPSC](/projects/mpsc-channel.md) 会换成线程安全版 `Arc<Mutex> + Condvar`）。
 
 <Callout type="idea" title="优先让编译期规则通过" text="`RefCell` 只应用在「编译期无法表达、但逻辑上确实安全」的场景：实现某些数据结构、mock 对象、观察者模式。能用 `&mut` 或调整结构解决的，别用 RefCell —— 把错误从编译期推到运行时是明显的退让。" />
 

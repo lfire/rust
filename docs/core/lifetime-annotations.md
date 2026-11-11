@@ -166,7 +166,7 @@ fn apply(f: for<'a> fn(&'a str), s: &str) { f(s) }
 
 <Quiz no="22-2" q="三条省略规则中，方法里输出引用默认绑到谁？" :options='["第一个参数", "返回值自己", "&self 或 &mut self", "最长生命周期的参数"]' answer="2" explain="规则 3：有 &self 时，输出生命周期取 self 的，所以多数 getter 不用写标注。" />
 
-<Quiz no="22-3" q="关于 `'static`，哪些说法正确？" :options='["字面量字符串是 &static str", "T: &static 表示 T 不含短命引用", "给变量标 static 就能让它活到程序结束", "标注不改变值实际存活时间"]' answer="0,1,3" multi="true" explain="不能靠标注给局部变量续命；要么真的把数据放进静态存储，要么用拥有所有权的类型。" />
+<Quiz no="22-3" q="关于 `'static`，哪些说法正确？" :options='["字面量字符串是 \x27static str", "T: \x27static 表示 T 不含短命引用", "给变量标 static 就能让它活到程序结束", "标注不改变值实际存活时间"]' answer="0,1,3" multi="true" explain="不能靠标注给局部变量续命；要么真的把数据放进静态存储，要么用拥有所有权的类型。" />
 
 <Predict no="22-4" q="两个输入都标同一个 'a 时，返回值能活多久？" :options='["到较长的那个输入销毁", "到较短的那个输入销毁", "永远", "由调用方决定"]' answer="1" output="到较短的那个输入销毁" explain="取交集才能保证返回引用在两个输入都有效时一定有效；这也是 E0597 的常见来源。" />
 
@@ -192,6 +192,6 @@ fn apply(f: for<'a> fn(&'a str), s: &str) { f(s) }
 - `T: 'static` 是「不含短命引用」的 bound，与 `thread::spawn` 的 `move` 直接相关。
 - 别把所有引用都绑成同一个 `'a`，那会过度约束调用方。
 
-<CheckList id="lifetime-ann-check" title="学完本节，你应该能…" :items='["读懂 longest 里的三个 a 标注", "说出三条省略规则", "写出带引用字段的 struct 及其 impl", "解释 T: &static 的真实含义", "识别并修好过度约束"]' />
+<CheckList id="lifetime-ann-check" title="学完本节，你应该能…" :items='["读懂 longest 里的三个 a 标注", "说出三条省略规则", "写出带引用字段的 struct 及其 impl", "解释 T: \x27static 的真实含义", "识别并修好过度约束"]' />
 
 [上一讲：生命周期直觉 →](/core/lifetime.md) · [下一讲：struct、impl 与方法 →](/core/struct-enum.md)

@@ -7,7 +7,7 @@ description: 生成 x509 证书、给 TCP 加 TLS、把帧读写封装成 Stream
 
 # 第 47 讲 · KV 第 3 步：TLS 与异步
 
-第 2 步已经能跑，但有两个问题：数据在网络上**明文传输**，以及帧读写还是手写的同步式循环。这一步同时解决它们。
+第 2 步已经能跑，但有两个问题：数据在网络上**明文传输**，以及帧读写还是命令式的 async 循环。这一步同时解决它们：加 TLS，并把帧收发封装成 Stream / Sink。
 
 <ConceptDiagram type="async" title="tokio 用少量线程驱动大量 Future，IO 就绪时由 Waker 唤醒" />
 

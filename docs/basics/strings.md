@@ -117,6 +117,47 @@ fn main() {
 
 <Term word="Deref 强制转换" text="当函数期待 &str 却收到 &String 时，编译器会自动沿 Deref 链把 &String 转成 &str，不需要手写转换。这是 greet(&owned) 能直接编译的原因。" />
 
+## 补充：字符串与字节类型全景
+
+`&str` / `String` 是主角，但不是全部。Rust 把「文本在不同场合下的形态」拆成了好几种类型，看着多，其实只是同一组关系在反复出现：**拥有所有权的 / 借用的视图 / 固定大小的数组**。
+
+| 家族 | 拥有所有权 | 借用视图 | 固定大小 | 说明 |
+| --- | --- | --- | --- | --- |
+| 文本 | `String` | `&str` | — | `str` 是动态大小类型，只能以 `&str` 出现 |
+| 字节 | `Vec<u8>` | `&[u8]` | `&[u8; N]` | `[u8]` 是字节切片，地位与 `str` 相同 |
+| 堆上不可变文本 | `Box<str>` | `&str` | — | 比 `String` 少存一个 capacity，适合存完就不改 |
+| 按需克隆 | `Cow<'_, str>` | — | — | 能借用就借用，真要改才分配 |
+| 路径 | `PathBuf` | `Path` | — | 处理跨平台分隔符，不保证是 UTF-8 |
+| 系统原生字符串 | `OsString` | `OsStr` | — | 文件名未必是合法 UTF-8，不能强转成 `String` |
+| C 风格字符串 | `CString` | `CStr` | — | 以 0 字节结尾、串中不能含 0，专供 FFI |
+
+后三行是**为什么 Rust 不能只留一个字符串类型**的答案：C 用一个 `char *` 把这些情况全抹平了，代价是「这段字节是不是文本、谁负责释放、能不能含 0」全靠约定。Rust 选择把它们写进类型。
+
+### `as_*` 与跨类型速查
+
+| 方法 / 函数 | 从 | 到 |
+| --- | --- | --- |
+| `s.as_str()` | `String` | `&str`（等价 `&s[..]`） |
+| `s.as_bytes()` | `String` / `&str` | `&[u8]`，不做任何拷贝 |
+| `v.as_slice()` | `Vec<T>` | `&[T]`（等价 `&v[..]`） |
+| `String::from_utf8(v)` | `Vec<u8>` | `Result<String, FromUtf8Error>`，消耗入参 |
+| `str::from_utf8(b)` | `&[u8]` | `Result<&str, Utf8Error>`，零拷贝校验 |
+| `s.chars()` | `&str` | 按 Unicode 标量值的迭代器 |
+| `"42".parse::<u32>()` | `&str` | `Result<u32, ParseIntError>`，背后是 `FromStr` |
+
+```rust
+fn main() {
+    let bytes: Vec<u8> = b"hello".to_vec();
+    let view: &[u8] = bytes.as_slice();
+    let text = std::str::from_utf8(view).unwrap();   // 校验 UTF-8，零拷贝
+    let n: u32 = "42".parse().unwrap();              // 类型由标注推断
+    let lossy = String::from_utf8_lossy(&[0xf0, 0x9f, 0x98, 0x80]);
+    println!("{} {} {}", text, n, lossy);
+}
+```
+
+<Callout type="warn" title="别绕过 UTF-8 校验" text="`from_utf8_unchecked` 是 unsafe：跳过校验换来的那点性能，通常远小于一次非法字节导致的内存安全代价。同理，`parse()` 是标准库统一的解析接口（`FromStr`），`bool` / `char` / `IpAddr` 都能直接转；结构化的格式（JSON / TOML）交给 serde，别自己切字符串。" />
+
 ## 五、拼接与常用操作
 
 ```rust
@@ -144,7 +185,7 @@ fn main() {
 
 <StepBox title="从字面量拼出一句话" :steps='[{"title":"第 1 步：拿到不可变文本","body":"let name: &amp;str = \"小明\";\n类型 &amp;str，零分配","tip":"字面量全程有效，可以放心借看"},{"title":"第 2 步：决定要不要修改","body":"只是读、只是传参 → 继续用 &amp;str\n要追加、要存进结构体 → 转成 String","tip":"先问「谁拥有它」，再决定类型"},{"title":"第 3 步：生成结果","body":"let msg = format!(\"你好，{}\", name);\n得到一个新的 String","tip":"format! 不夺取 name 的所有权，最安全"}]' />
 
-<Callout type="warn" title="`+` 会悄悄移动左边的值" text="`s1 + &s2` 的底层签名是 `fn add(self, rhs: &str) -> String`：第一个操作数是按值传进去的，所以 `s1` 被移动。想保留原串请用 `format!` 或 `s1.clone() + &s2`。这条规则的完整解释在 [第 16 讲](/core/ownership.md)。" />
+<Callout type="warn" title="`+` 会悄悄移动左边的值" text="`s1 + &s2` 的底层签名是 `fn add(self, rhs: &str) -> String`：第一个操作数是按值传进去的，所以 `s1` 被移动。想保留原串请用 `format!` 或 `s1.clone() + &s2`。移动的解释见 [第 16 讲](/core/ownership.md)，`+` 背后的 `Add` 签名到 [第 28 讲](/core/traits.md) 才展开。" />
 
 ## 六、函数参数该写哪一个
 

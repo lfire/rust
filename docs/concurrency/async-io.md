@@ -165,6 +165,48 @@ async fn main() -> anyhow::Result<()> {
 | `tokio::task::spawn_blocking` | 把 CPU 密集 / 同步 IO 挪出异步线程 |
 | `CancellationToken`（tokio-util） | 比 broadcast 更清晰的关停传播 |
 
+## 补充：async 的传染性与同步边界
+
+写了几讲异步之后，有个现象值得单独点破：**`.await` 会顺着调用链往上传染**。原因只有两条规则 —— `async fn` 里的代码只有被 `.await` 才会真正执行，而 `.await` 只能写在 `async fn` / `async {}` 里。于是调用者也被迫变成异步：
+
+```rust
+async fn foo1() -> u32 { 100 }
+async fn foo2() -> u32 { foo1().await }
+async fn foo3() -> u32 { foo2().await }
+
+#[tokio::main]
+async fn main() { println!("{}", foo3().await); }
+```
+
+这就是很多人口中的「async 是个独立王国」：一旦入口选了异步，调用链上的函数、错误处理、trait 定义、测试写法都会跟着变。
+
+### 三道边界怎么过
+
+| 场景 | 做法 | 为什么 |
+| --- | --- | --- |
+| async 里做内存内操作（`vec.push`、算术） | 照常写 | 不涉及等待，和同步 Rust 完全一样 |
+| async 里碰到阻塞 IO / 重 CPU 计算 | 放进 `tokio::task::spawn_blocking` | 否则占住一个 worker 线程，同线程上所有任务停摆（第五节已讲） |
+| 同步代码里要跑一个 Future | 建 Runtime 后 `rt.block_on(fut)` | 需要一个 executor 来 poll，`#[tokio::main]` 就是它的语法糖 |
+
+```rust
+// #[tokio::main] 展开后大致是这样
+fn main() {
+    let rt = tokio::runtime::Builder::new_multi_thread()
+        .enable_all()
+        .build()
+        .unwrap();
+    rt.block_on(async {
+        println!("Hello world");
+    });
+}
+```
+
+测试或一次性脚本里可以用 `new_current_thread()` 建单线程 runtime，不必起线程池。注意 `block_on` 会**阻塞当前线程**，不要在 async 任务内部再调它。
+
+<Callout type="warn" title="给写库的人一条建议" text="库函数不要为了「看起来现代」就标 async：一旦标了，所有下游调用方都被迫异步化，还把执行方式绑死在某个 runtime 上。能保持同步的接口就保持同步，让调用方自己决定要不要包进 `spawn_blocking`。另外，trait 里的 `async fn` 自 Rust 1.75 起已经稳定，静态分发场景不再需要 `async_trait` 宏那层过渡方案；但 `dyn Trait` 目前仍不支持异步方法，遇到对象安全需求时那个 crate 还会用到。" />
+
+<Quiz no="38-5" q="同步函数里想执行一个 async 函数，正确做法是？" :options='["直接调用它，Rust 会自动驱动", "建 runtime 后用 block_on 驱动这个 Future", "在同步函数里写 .await", "把函数改成 unsafe"]' answer="1" explain="Future 是惰性的，必须有 executor 轮询；同步函数里没有 .await 上下文，只能用 runtime 的 block_on 作为入口。" />
+
 ## 六、和 L5 项目的连线
 
 | 项目 | 用到的本讲内容 |
@@ -191,7 +233,7 @@ async fn main() -> anyhow::Result<()> {
 | --- | --- |
 | 用了 tokio 却整服务卡顿 | 混进了同步 IO / 重 CPU 计算 → `tokio::fs` / `spawn_blocking` |
 | `select!` 后数据错位 | 分支 Future 不 cancellation-safe → 保存状态或独立 spawn |
-| 关停时有请求丢失 | 广播关停 + 宽限期等待任务收敛（见 KV 第 5 步） |
+| 关停时有请求丢失 | 广播关停 + 宽限期等待任务收敛（见第 48 讲 网络编程进阶） |
 | `Stream` 里的 filter 编译不过 | `StreamExt::filter` 的闭包要返回 `Future`，用 `futures::future::ready(...)` |
 | 运行时 panic `no reactor running` | 在 `#[tokio::main]` 之外调用了 tokio 的 IO |
 

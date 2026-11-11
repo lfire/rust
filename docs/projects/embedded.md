@@ -179,6 +179,31 @@ fn main() {
 
 <Exercise title="给嵌入式骨架加一个计数器" task="在 no_std 的 loop 里维护一个 `u32` 计数器，每翻转一次 LED 加一，并说明：为什么这里不能用 `Vec` 记录历史？如果要记录最近 16 次计数，怎么写才不依赖堆？" hints='["固定大小数组 [u32; 16] 放在 static mut 或局部变量里", "static mut 访问需要 unsafe，更推荐用局部可变状态 + 原子类型", "环形缓冲区用索引取模实现"]' solution="let mut ring = [0u32; 16];\nlet mut idx = 0usize;\nloop {\n    ring[idx] = counter;\n    idx = (idx + 1) % ring.len();\n    counter = counter.wrapping_add(1);\n    // led.toggle();\n}" explain="固定容量数组 + 环形索引，是 no_std 下替代动态容器的标准做法：内存占用编译期确定。" />
 
+### Bevy 的 ECS：把游戏状态铺平
+
+`wgpu` 管「怎么画」，`Bevy` 管「一帧里谁动、谁响应、状态存在哪」。它是数据驱动的引擎，核心是 **ECS**，思路和 trait 组合很像：不搞继承树，把所有信息铺平，用组合来建模。
+
+| 概念 | 是什么 | 代码里的样子 |
+| --- | --- | --- |
+| Component | 一组属性，按能力拆细以便复用 | `#[derive(Component)] struct Position { x: i32, y: i32 }` |
+| Entity | 一个编号；挂哪些 Component 就有哪些能力 | `commands.spawn((SnakeHead, Position { x: 0, y: 0 }))` |
+| System | 普通 Rust 函数，声明自己要读写哪些 Component | `fn movement(mut q: Query<(&Speed, &mut Transform)>)` |
+| Resource | 全局唯一状态：计时器、素材、分数 | `Res<T>` / `ResMut<T>`、`app.insert_resource(..)` |
+| Event | 系统之间解耦通信 | `EventWriter<T>` / `EventReader<T>`、`add_event::<T>()` |
+
+那张「Entity × Component」大表就是**世界状态**，由引擎维护。System 不直接改它，增删实体要通过 `Commands`（可以理解成一条延迟执行的命令队列）。游戏示例通常按每秒 60 帧（60 个 tick）设计：`Startup` 的系统只跑一次，`Update` 的每帧跑一次；想让「每 0.5 秒移动一格」而不是「一帧一格」，要用 `Timer` 配合 `time.delta()` 控速。
+
+```rust
+// 示意：一个 system 就是「声明我要什么数据」的普通函数（需 bevy 依赖）
+fn snake_movement(mut heads: Query<(&SnakeHead, &mut Transform)>) {
+    for (_, mut transform) in heads.iter_mut() {
+        transform.translation.y += 2.0;
+    }
+}
+```
+
+<Callout type="warn" title="两个新手最容易踩的坑" text="① System 默认尽量并行，执行顺序不确定，有依赖就用 `.before()` / `.after()` 显式指定；② Bevy 2D 的坐标原点默认在窗口正中，做网格游戏要自己换算到左下角。另外 ECS 的 API 在小版本间变动较快，照着教程写代码时请先锁定 `Cargo.toml` 里的 Bevy 版本。" />
+
 ## 常见坑
 
 | 场景 | 现象 | 处理 |

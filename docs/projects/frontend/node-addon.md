@@ -156,7 +156,7 @@ export declare class BatchHasher {
 | 大数组传入 | 无 | 需拷贝 | 需转换 |
 | 首次加载 | 即时 | 下载 + 编译 WASM | 加载 .node |
 
-结论和 10. 一致：**调用次数多且每次数据小，边界成本会主导结果**。所以上面的 `BatchHasher` 才把数据留在 Rust 侧，一次 `finish()` 拿全部结果。
+结论和 [第 59 讲](/projects/frontend/wasm-practice.md) 的拷贝成本判断一致：**调用次数多且每次数据小，边界成本会主导结果**。所以上面的 `BatchHasher` 才把数据留在 Rust 侧，一次 `finish()` 拿全部结果。
 
 ## 类型映射速查
 

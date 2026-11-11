@@ -147,6 +147,38 @@ struct Point { x: i32, y: i32 }
 
 <Exercise title="给待办清单建模" task="定义 `struct Todo { title: String, done: bool }`，写三个方法：`fn new(title: String) -&gt; Self`（关联函数）、`fn complete(&mut self)`、`fn summary(&self) -&gt; String`；再用 `#[derive(Debug, Clone)]` 让它可以打印和克隆。" hints='["new 是关联函数，没有 self，用 Todo::new(...) 调用", "complete 要改字段，所以是 &mut self", "summary 用 format! 拼接，注意 self.title 是 String，打印时用 &amp;self.title 或 clone"]' solution="#[derive(Debug, Clone)]\nstruct Todo { title: String, done: bool }\n\nimpl Todo {\n    fn new(title: String) -&gt; Self { Self { title, done: false } }\n    fn complete(&amp;mut self) { self.done = true; }\n    fn summary(&amp;self) -&gt; String {\n        format!(&quot;[{}] {}&quot;, if self.done { &quot;x&quot; } else { &quot; &quot; }, self.title)\n    }\n}\n\nfn main() {\n    let mut t = Todo::new(&quot;学所有权&quot;.into());\n    t.complete();\n    println!(&quot;{} / {:?}&quot;, t.summary(), t.clone());\n}" explain="L5 的待办清单项目就是从这个模型长出来的，会再加上 enum 优先级与 serde 持久化。" />
 
+## 补充：部分移动与引用字段
+
+结构体不是一个「焊死的盒子」，**每个字段的所有权是各自独立的**。于是会出现一种介于「完全可用」和「完全移走」之间的状态 —— 部分移动（partial move）：
+
+```rust
+#[derive(Debug)]
+struct User { name: String, age: u32 }
+
+fn main() {
+    let u = User { name: String::from("Ana"), age: 20 };
+    let name = u.name;             // name 是 String，所有权被单独移出
+    println!("{}", u.age);         // ✅ 没被移走的字段仍可用
+    println!("{}", name);
+    // println!("{}", u.name);     // ❌ 该字段已失效
+    // println!("{:?}", u);       // ❌ E0382: borrow of partially moved value
+}
+```
+
+`u.name` 被移走后，编译器把**这个字段**标记为失效：整体不能再被借用或整体打印，但 `u.age` 这类未移动的字段照常可读。这和 `let v = u;`（把整个值移走）不同，也解释了为什么 `#[derive(Debug)]` 打印整个结构体时会报错 —— 打印需要借用完整的 `u`。
+
+想避免部分移动，三种写法按意图选：
+
+| 需求 | 写法 |
+| --- | --- |
+| 只想读，不想要所有权 | `let name: &str = &u.name;` |
+| 确实要一份独立数据 | `let name = u.name.clone();` |
+| 整体移走、之后不再用 `u` | `let User { name, age } = u;`（解构写法见 [第 25 讲](/core/patterns.md)） |
+
+<Callout type="idea" title="字段里放引用会怎样" text="写成 `struct User<'a> { name: &'a str }` 是合法的，但必须补上生命周期参数 `'a`，告诉编译器「这个名字至少和结构体活一样久」。这正是 [第 22 讲](/core/lifetime-annotations.md) 处理的问题。业务代码里更省心的做法通常是让结构体拥有 `String`，只在需要临时视图时借用出去。" />
+
+<Quiz no="23-5" q="`let name = u.name;`（name 是 String）之后，下列哪项仍可编译？" :options='["用 Debug 打印整个结构体 u", "读取另一个字段 u.age", "再读一次已移走的 u.name", "以上全部"]' answer="1" explain="只有未移动的字段还能用；整体借用（Debug 打印）与已移动字段都会触发 E0382。" />
+
 ## 常见坑
 
 | 现象 | 处理 |

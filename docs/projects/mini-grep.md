@@ -158,7 +158,7 @@ cargo run -- --help
 
 <Predict no="40-3" q="文件不存在时，这个程序会？" :options='["panic 并打印栈回溯", "在 stderr 打印错误并以退出码 1 结束", "静默结束，退出码 0", "创建一个空文件"]' answer="1" output="错误：读取 xxx 失败：No such file or directory (os error 2)" explain="run() 用 ? 把错误交给 main，main 打印到 stderr 后 process::exit(1)。" />
 
-<Exercise title="补全一个功能" task="加 `--invert` 参数：只打印**不**包含关键词的行。要求复用同一个 search 函数，不要复制过滤逻辑。" hints='["给 Cli 加一个 bool 字段", "把 invert 作为参数传进 search", "filter 里返回 found ^ invert（异或）"]' solution="let found = hay.contains(&needle);\nif invert { !found } else { found }" explain="用一个布尔参数控制谓词取反，比复制整段迭代好维护。" />
+<Exercise title="补全一个功能" task="加 `--invert` 参数：只打印不包含关键词的行。要求复用同一个 search 函数，不要复制过滤逻辑。" hints='["给 Cli 加一个 bool 字段", "把 invert 作为参数传进 search", "filter 里返回 found ^ invert（异或）"]' solution="let found = hay.contains(&needle);\nif invert { !found } else { found }" explain="用一个布尔参数控制谓词取反，比复制整段迭代好维护。" />
 
 ## 扩展挑战
 

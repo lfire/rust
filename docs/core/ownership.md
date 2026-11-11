@@ -3,7 +3,7 @@ title: 第 16 讲 · 所有权三法则与 Move
 description: 三条规则从哪来、赋值/传参/返回时所有权怎么转移、以及怎么读 E0382 报错。
 ---
 
-<StageHeader stage="L3 · 第 16 讲" level="★★★☆☆" time="25 分钟" goal="能逐行预判一段代码里值的所有权归谁" prereq="L2 所有权初体验" />
+<StageHeader stage="L3 · 第 16 讲" level="★★★☆☆" time="25 分钟" goal="能逐行预判一段代码里值的所有权归谁" prereq="L2 → L3 过渡页 · 所有权初体验" />
 
 # 第 16 讲 · 所有权三法则与 Move
 

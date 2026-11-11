@@ -81,7 +81,7 @@ fn main() {
 | 只是整数计数 / 标志位 | `AtomicUsize` / `AtomicBool` |
 | 一块数据要被多线程读写 | `Arc<Mutex<T>>` |
 | 读多写少 | `Arc<RwLock<T>>`（多个读或一个写） |
-| 能改成消息传递 | 优先用 channel（下一节） |
+| 能改成消息传递 | 优先用 channel（第 35 讲） |
 
 <Callout type="warn" title="RwLock 不一定更快" text="读写锁的实现更复杂，读多写少才划算；写频繁时可能比 Mutex 更慢。先用 Mutex 写对，再靠压测决定要不要换。" />
 

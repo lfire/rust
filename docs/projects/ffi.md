@@ -3,13 +3,13 @@ title: 第 53 讲 · unsafe Rust 与 FFI
 description: 裸指针、extern C、repr(C) 与安全封装，掌握 Rust 与 C/系统库互操作的边界。
 ---
 
-<StageHeader stage="L5 · 第 53 讲" level="★★★★★" time="75 分钟" goal="能安全地封装一个 C 函数并把 Rust 暴露成 C 库" prereq="L3 全部 + 第 54 讲 PyO3" />
+<StageHeader stage="L5 · 第 53 讲" level="★★★★★" time="75 分钟" goal="能安全地封装一个 C 函数并把 Rust 暴露成 C 库" prereq="L3 全部 + L4 基础" />
 
 # 第 53 讲 · unsafe Rust 与 FFI
 
 PyO3 这类框架会把 FFI 细节整个包起来 —— [第 54 讲](/projects/pyo3.md) 就会用到它。但在走这条捷径之前，本讲先把盖子掀开：Rust 到底怎么和 C ABI 对话，以及为什么 `unsafe` 不是「关掉检查」，而是**把一部分安全证明的责任交给写代码的人**。
 
-## unsafe 到底解开了什么
+## 一、unsafe 到底解开了什么
 
 `unsafe` 块里只多出五种能力，其余检查（类型、借用、生命周期）**照常生效**：
 
@@ -21,7 +21,7 @@ PyO3 这类框架会把 FFI 细节整个包起来 —— [第 54 讲](/projects/
 
 <Callout type="warn" title="unsafe 的契约" text="进入 unsafe 块，等于向编译器承诺「我已经人工确认这段代码满足内存安全」。承诺错了就是未定义行为（UB），而且编译器不会帮你发现。所以每个 unsafe 块都要写 `// SAFETY:` 注释，说明为什么成立 —— 这不是风格建议，是维护者唯一的安全依据。" />
 
-## 一、Rust 调用 C
+## 二、Rust 调用 C
 
 ```c
 /* clib/mathx.h */
@@ -74,7 +74,7 @@ fn main() {
 }
 ```
 
-## 二、字符串与所有权边界
+## 三、字符串与所有权边界
 
 C 字符串是 `\0` 结尾的 `char*`，Rust 的 `String` 不是。跨边界要用 `CString` / `CStr`：
 
@@ -102,7 +102,7 @@ pub unsafe fn print_c_str(ptr: *const c_char) {
 
 <Callout type="idea" title="谁分配谁释放" text="跨 FFI 边界最常见的事故是「用错分配器释放」：Rust 分配的内存必须还给 Rust，C 的 `malloc` 必须用 `free`。所以要么提供成对的 `xxx_free()` 导出函数，要么让调用方提供缓冲区（像上面的 `sum_array`），后者更安全。" />
 
-## 三、把 Rust 编译成 C 库
+## 四、把 Rust 编译成 C 库
 
 ```toml
 [lib]
@@ -140,7 +140,7 @@ rust_free_string(s);
 
 <StepBox title="安全封装四步法" :steps='[{"title":"原始声明","body":"`extern \"C\"` 里只放签名，不写逻辑。","tip":"结构体加 `#[repr(C)]` 保证布局一致。"},{"title":"最小 unsafe 块","body":"每个 unsafe 只包住真正需要的一次调用，配 `// SAFETY:` 注释。","tip":"注释要写清指针有效性、长度、生命周期、对齐。"},{"title":"安全 API 包装","body":"对外暴露 `pub fn`，参数用切片 / 引用，内部再做转换。","tip":"调用方永远不需要自己写 unsafe。"},{"title":"验证","body":"`cargo miri test`（支持的平台）、ASan/Valgrind、边界用例各跑一遍。","tip":"空指针、零长度、含 NUL 的字符串是必备用例。"}]' />
 
-## 四、`#[repr]` 布局速查
+## 五、`#[repr]` 布局速查
 
 | 属性 | 含义 |
 | --- | --- |
