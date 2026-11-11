@@ -124,4 +124,4 @@ mod tests {
 
 <CheckList id="cargo-check" title="学完本节，你应该能…" :items='["读懂并修改 Cargo.toml 的依赖段", "把一个函数拆到独立模块并在 main 里调用", "写出一个 assert_eq! 单元测试", "说出 cargo check / fmt / clippy 各自的用途"]' />
 
-[下一节：所有权初体验 →](/basics/ownership-first-look.md)
+[上一讲：第 13 讲 match 与模式匹配入门 →](/basics/match-basics.md) · [下一讲：第 15 讲 阶段综合：成绩统计程序 →](/basics/capstone.md)

@@ -191,7 +191,7 @@ let sum: i32 = v.iter().filter(|&&x| x % 2 == 0).map(|&x| x * 10).sum();
 | `type annotations needed` on collect | 给目标变量标类型或用 turbofish |
 | `filter` 里类型不匹配 | 用 `copied()` 或写对 `\|&&x\|` |
 | 迭代器链「没执行」 | 忘了 `collect` / `sum` / `for` 消费 |
-| 闭包报「可能活得比借用久」 | 加 `move`，下一讲会解释原因 |
+| 闭包报「可能活得比借用久」 | 加 `move`；[第 32 讲](/concurrency/threads.md) 会展开线程场景里为什么必须写 |
 | `use of moved value` after `into_iter` | 按值迭代消耗了集合，改用 `iter()` |
 
 ## 小结

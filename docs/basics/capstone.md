@@ -196,4 +196,4 @@ cargo run
 
 <CheckList id="capstone-check" title="验收清单" :items='["cargo test 全部通过且覆盖非法输入", "程序不因坏数据 panic", "至少有一个 enum 表达业务概念", "逻辑拆成可单测的纯函数", "按评审清单改掉了至少两处问题"]' />
 
-[回到阶段二导览 →](/basics/) · [进入阶段三：核心机制 →](/core/)
+[上一讲：第 14 讲 Cargo 与项目结构 →](/basics/cargo.md) · [下一节：所有权初体验（补充）→](/basics/ownership-first-look.md) · [进入阶段三：核心机制 →](/core/)

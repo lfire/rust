@@ -188,4 +188,4 @@ fn main() {
 
 <CheckList id="callables-check" title="学完本节，你应该能…" :items='["说出函数 / 方法 / 闭包三者的区别", "解释调用栈与局部变量销毁的关系", "判断一段代码是语句还是表达式", "用 if 表达式给变量赋值", "说出这些概念后续会在哪几讲展开"]' />
 
-[上一讲：指针、引用与地址 →](/foundation/concepts.md) · [下一讲：为什么值得学 Rust →](/foundation/why-rust.md)
+[上一讲：第 06 讲 指针、引用与地址 →](/foundation/pointers.md) · [下一讲：第 08 讲 为什么值得学 Rust →](/foundation/why-rust.md)

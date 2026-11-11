@@ -35,7 +35,7 @@ description: 这套教程与 rust-coding 原始教材的关系、内容映射、
 | 05 进阶篇 30～32（Unsafe、FFI、PyO3） | [第 54 讲 PyO3 扩展](/projects/pyo3.md) |
 | 06 并发篇 33～42（atomic、Mutex、MPSC、Future、KV 网络/TLS/异步/重构） | [L4 并发与异步](/concurrency/)、[第 51 讲 手写 MPSC](/projects/mpsc-channel.md)、[KV 第 3 / 4 步](/projects/kv/3-async.md) |
 | 07 实战篇 43～46（生产环境、数据处理、配置测试监控 CI/CD、架构） | [KV 第 5 步 生产化](/projects/kv/5-production.md)、[第 57 讲 软件架构、生态与持续精进](/projects/production.md) |
-| 08 结束语（如何持续精进） | [综合自测](/practice/) 与首页学习路线 |
+| 08 结束语（如何持续精进） | [第 57 讲 持续精进路线](/projects/production.md) 与 [第 66 讲 结课与进阶建议](/projects/embedded.md) |
 | 03 基础篇 20 讲（如何读源码）/ 加餐·期中参考实现 / 加餐·愚昧之巅 | [阶段综合](/basics/capstone.md)、[模式匹配进阶](/core/patterns.md)、[CLI 工程化](/projects/cli-engineering.md)、[网络编程进阶](/projects/network-advanced.md)、[数据工程](/projects/data-engineering.md)、[Actor 模型](/projects/actor.md)、[unsafe 与 FFI](/projects/ffi.md) |
 | **原教材未覆盖，本站补充编撰** | 见下表 ↓ |
 

@@ -96,4 +96,4 @@ fn main() {
 
 <CheckList id="memory-check" title="学完本节，你应该能…" :items='["说出栈和堆各自的两个特点", "解释为什么 String 变量在栈上只有三个机器字", "解释为什么不能简单地复制指针", "预判 i32 与 String 赋值后的不同结果"]' />
 
-[下一节：编程基本概念串讲 →](/foundation/concepts.md)
+[上一讲：第 04 讲 程序、数据、值与类型 →](/foundation/concepts.md) · [下一讲：第 06 讲 指针、引用与地址 →](/foundation/pointers.md)

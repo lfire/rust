@@ -19,7 +19,7 @@ description: 用一讲把程序、值、类型、内存、函数、控制流、�
 | --- | --- | --- | --- |
 | 1. 程序怎么跑 | 源码、编译、运行 | 写给人的文本 → 编译器 → 可执行文件 | [第 02 讲](/guide/setup.md) · [第 03 讲](/guide/hello.md) |
 | 2. 数据怎么表示 | 值、类型、变量、字符串 | 值有类型，类型决定能对它做什么 | [第 04 讲](/foundation/concepts.md) · [第 09 讲](/basics/variables.md) · [第 10 讲](/basics/strings.md) |
-| 3. 数据放在哪 | 栈、堆、指针、引用 | 小东西放栈上，动态大小放堆上 | [第 05 讲](/foundation/memory.md) · [第 06 讲](/foundation/concepts.md) |
+| 3. 数据放在哪 | 栈、堆、指针、引用 | 小东西放栈上，动态大小放堆上 | [第 05 讲](/foundation/memory.md) · [第 06 讲](/foundation/pointers.md) |
 | 4. 逻辑怎么组织 | 函数、方法、闭包、表达式、控制流 | 把步骤打包、按需分叉和重复 | [第 07 讲](/foundation/callables.md) · [第 11 讲](/basics/functions.md) · [第 12 讲](/basics/control-flow.md) · [第 13 讲](/basics/match-basics.md) |
 | 5. Rust 独有的一关 | 所有权、借用、生命周期 | 每个值只有一个主人，用完自动释放 | [第 16–22 讲](/core/ownership.md) |
 | 6. 失败与抽象 | Option / Result / trait / 泛型 | 「可能没有」和「可能失败」都写进类型里 | [第 24 讲](/core/enums.md) · [第 27 讲](/core/error-handling.md) · [第 28 讲](/core/traits.md) |
@@ -101,7 +101,7 @@ fn main() {
 
 - **函数**把步骤打包；`impl` 里依附于某个值的函数叫**方法**；能捕获周围变量的匿名函数叫**闭包**。
 - Rust 里**绝大多数东西是表达式**（有值），所以 `if` 可以直接赋给变量；函数最后一行不加分号就是返回值。
-- **模式匹配** `match` 会强制你处理所有情况，后面 [第 13](/basics/match-basics.md) / [第 25 讲](/core/patterns.md) 会展开。
+- **模式匹配** `match` 会强制你处理所有情况，后面 [第 13 讲](/basics/match-basics.md) / [第 25 讲](/core/patterns.md) 会展开。
 
 ## 六、Rust 独有的那道坎
 
@@ -186,7 +186,7 @@ let text = std::fs::read_to_string("a.txt");   // Result<String, io::Error>
 - 八组概念：程序怎么跑、数据怎么表示、放在哪、逻辑怎么组织、所有权、失败与抽象、并发、工程。
 - Rust 的独特性集中在**所有权**：没有 GC，也不用手动释放。
 - 核心思路是「能交给编译期检查的，别留到运行时」。
-- 六阶段递进，L3 最难但最值得慢下来；之后进入九类工程场景。
+- 六阶段递进，L3 最难但最值得慢下来；之后是 L4 并发与异步，再到 L5 的九类工程场景。
 - 完整 66 讲索引见 [课程总目录](/guide/curriculum.md)，使用方法见 [如何使用这套教程](/guide/index.md)。
 
 <CheckList id="opening-check" title="学完本节，你应该能…" :items='["说出八组基础概念各自解决什么问题", "解释编译和运行是两步", "知道栈与堆的分工以及它为什么重要", "用一句话说清 Rust 的核心机制是所有权", "知道 L3 为什么不能跳过"]' />

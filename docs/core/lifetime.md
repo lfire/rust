@@ -167,4 +167,4 @@ fn main() {
 
 <CheckList id="lifetime-check" title="学完本节，你应该能…" :items='["用一句话解释生命周期要解决什么问题", "读懂 E0597 并指出哪个值活得太短", "区分作用域与生命周期", "解释 NLL 为什么让某些代码能编译", "知道什么时候才需要手写标注"]' />
 
-[上一讲：可变借用与借用规则 →](/core/mutable-borrow.md) · [下一讲：生命周期标注与省略规则 →](/core/lifetime-annotations.md)
+[上一讲：第 20 讲 切片与借用 →](/core/slices.md) · [下一讲：第 22 讲 生命周期标注与省略规则 →](/core/lifetime-annotations.md)
