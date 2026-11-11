@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref } from 'vue'
+import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { useRoute } from 'vitepress'
-import { LESSONS, isDone, setDone } from '../utils'
+import { LESSONS, isDone, normPath, setDone } from '../utils'
 
 const props = defineProps<{
   stage?: string
@@ -13,6 +13,11 @@ const props = defineProps<{
 
 const route = useRoute()
 const done = ref(false)
+// 只有列入 LESSONS 的课程/导览页才显示打卡按钮，避免「打了卡却不计入进度」
+const trackable = computed(() => {
+  const p = normPath(route.path).replace(/\/$/, '')
+  return LESSONS.some(l => l.path.replace(/\/$/, '') === p)
+})
 function sync() { done.value = isDone(route.path) }
 function toggle() {
   setDone(route.path, !done.value)
@@ -38,6 +43,7 @@ onUnmounted(() => {
     <div class="rb-stage-right">
       <span v-if="goal" class="rb-goal">🎯 {{ goal }}</span>
       <button
+        v-if="trackable"
         class="rb-btn" :class="done ? 'checked' : 'ghost'"
         :aria-pressed="done"
         style="padding:5px 12px;font-size:12px;white-space:nowrap"

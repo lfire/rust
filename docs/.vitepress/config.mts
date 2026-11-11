@@ -19,6 +19,13 @@ export default defineConfig({
     ['meta', { name: 'og:title', content: 'Rust 零基础通关 · 交互式教程' }],
     ['meta', { name: 'og:description', content: '从第一行代码到生产级工程，边学边练的 Rust 中文教程。' }],
   ],
+  vite: {
+    build: {
+      // 83 页的本地全文搜索索引约 600 KB，且只在打开搜索框时懒加载；
+      // 提高阈值以免每次构建都输出无害的 chunk 体积提示。
+      chunkSizeWarningLimit: 700,
+    },
+  },
   markdown: {
     lineNumbers: true,
     container: {

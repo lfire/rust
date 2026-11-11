@@ -130,7 +130,7 @@ fn App() -> impl IntoView {
                         <button on:click=move |_| {
                             let id = item.id;
                             set_items.update(|list| list.retain(|t| t.id != id));
-                        }}>"删除"</button>
+                        }>"删除"</button>
                     </li>
                 </For>
             </ul>

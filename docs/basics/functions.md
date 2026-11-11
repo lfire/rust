@@ -79,6 +79,7 @@ fn main() {
 <Predict no="11-1" q="下面这段代码输出什么？" :options='["10", "()", "编译错误：类型不匹配", "0"]' answer="2" output="error[E0308]: mismatched types" explain="函数声明返回 i32，但最后一行 value + 1; 带了分号，实际返回 ()。" />
 
 ```rust
+// 故意留错：最后一行带了分号，函数实际返回 () 而不是 i32
 fn compute() -> i32 {
     let value = 9;
     value + 1;

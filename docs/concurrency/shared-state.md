@@ -12,7 +12,7 @@ description: Arc 与 Mutex 的两层包装、Guard 自动解锁、锁粒度与�
 ## 为什么是两层包装
 
 ```text
-Arc&lt;Mutex&lt;T&gt;&gt;
+Arc<Mutex<T>>
  │      └─ Mutex：同一时刻只允许一个线程访问 T（互斥）
  └──────── Arc：让多个线程都能「拥有」这把锁（原子引用计数）
 ```

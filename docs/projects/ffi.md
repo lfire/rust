@@ -44,12 +44,11 @@ fn main() {
 
 ```rust
 // src/main.rs
-use std::ffi::c_void;
-
 #[repr(C)]
 pub struct Bounds { pub lo: i32, pub hi: i32 }
 
-unsafe extern "C" {
+// edition 2021 下 extern 块本身不写 unsafe；只有调用外部函数时才需要 unsafe {}
+extern "C" {
     fn clamp_i32(v: i32, lo: i32, hi: i32) -> i32;
     fn sum_array(ptr: *const i32, len: usize, out: *mut i64);
 }

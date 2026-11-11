@@ -66,7 +66,7 @@ fn main() {
 ### 闭包作为参数 / 返回值
 
 ```rust
-// 1. 参数：impl Fn（匿名泛型，最简洁）
+// 1. 参数：泛型 / impl Fn（匿名泛型，最简洁）
 fn apply_twice<F: Fn(i32) -> i32>(f: F, x: i32) -> i32 { f(f(x)) }
 
 // 2. 返回值：必须 impl Fn（不能返回具体类型）
@@ -74,13 +74,14 @@ fn make_adder(n: i32) -> impl Fn(i32) -> i32 {
     move |x| x + n
 }
 
-// 3. 需要混装不同类型 / 存进容器：Box<dyn Fn>
-let callbacks: Vec<Box<dyn Fn(i32)>> = vec![
-    Box::new(|x| println!("A {}", x)),
-    Box::new(move |x| println!("B {}", x + 1)),
-];
-
 fn main() {
+    // 3. 需要混装不同类型 / 存进容器：Box<dyn Fn>
+    let callbacks: Vec<Box<dyn Fn(i32)>> = vec![
+        Box::new(|x| println!("A {}", x)),
+        Box::new(move |x| println!("B {}", x + 1)),
+    ];
+    for cb in &callbacks { cb(1); }
+
     println!("{}", apply_twice(|x| x * 2, 3));   // 12
     println!("{}", make_adder(5)(3));            // 8
 }

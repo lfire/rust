@@ -3,12 +3,18 @@ import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { LESSONS, STAGE_LABEL, STAGE_COLOR, readDone, type Stage } from '../utils'
 
 const done = ref<string[]>([])
-function sync() { done.value = readDone() }
+// 只统计列入 LESSONS 的页面；附录/工具页与旧版本遗留的 localStorage 数据不计入
+function sync() {
+  const known = new Set(LESSONS.map(l => l.path.replace(/\/$/, '')))
+  done.value = readDone().filter(p => known.has(p.replace(/\/$/, '')))
+}
 onMounted(() => { sync(); window.addEventListener('rust-progress-change', sync) })
 onUnmounted(() => { if (typeof window !== 'undefined') window.removeEventListener('rust-progress-change', sync) })
 
 const stages: Stage[] = ['L0', 'L1', 'L2', 'L3', 'L4', 'L5']
-const pct = computed(() => Math.round(done.value.length / LESSONS.length * 100))
+const pct = computed(() => LESSONS.length
+  ? Math.min(100, Math.round(done.value.length / LESSONS.length * 100))
+  : 0)
 function stat(s: Stage) {
   const all = LESSONS.filter(l => l.stage === s)
   const n = all.filter(l => done.value.includes(l.path)).length

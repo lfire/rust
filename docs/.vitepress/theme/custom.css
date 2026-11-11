@@ -3,7 +3,8 @@
    暖白纸张底色 + Rust 橙色主色，兼顾浅色 / 深色两套主题
    ============================================================ */
 
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap');
+/* 不引用外部字体：@import 会阻塞 CSS 渲染，且该域名在国内常不可达。
+   直接使用系统字体栈；用户本机装有 Inter / JetBrains Mono 时仍会自动命中。 */
 
 :root {
   --vp-c-brand-1: #cf4a12;
@@ -141,6 +142,31 @@ body { font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11'; }
 .vp-doc th { background: var(--rb-soft); font-weight: 700; }
 .vp-doc :not(pre) > code { overflow-wrap: anywhere; word-break: break-word; }
 .vp-doc tr:hover td { background: color-mix(in srgb, var(--rb-soft) 60%, transparent); }
+
+/* 九类工程场景的分类徽章：A–I 与总目录 / 侧栏编号一致，统一形状与品牌配色；
+   .dark 下 --rb-orange / --rb-orange-soft 已覆盖，无需额外规则。 */
+.rb-scene-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5em;
+  height: 1.5em;
+  margin-right: .5em;
+  border-radius: 5px;
+  background: var(--rb-orange-soft);
+  border: 1px solid color-mix(in srgb, var(--rb-orange) 32%, transparent);
+  color: var(--rb-orange);
+  font-size: 11.5px;
+  font-weight: 750;
+  line-height: 1;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+/* 场景表：给首列留出「徽章 + 场景名」的宽度，避免名称被挤成两三字一行 */
+.vp-doc table:has(.rb-scene-badge) { table-layout: fixed; }
+.vp-doc table:has(.rb-scene-badge) :is(th, td):first-child { width: 34%; }
+.vp-doc table:has(.rb-scene-badge) :is(th, td):nth-child(2) { width: 44%; }
+.vp-doc table:has(.rb-scene-badge) :is(th, td):nth-child(3) { width: 22%; }
 
 /* ---------- 66 讲总目录：表头一致的讲次表统一列宽 ----------
    14 张表的表头都是「# | 讲名 | 难度 | 对应页面 | 状态」，

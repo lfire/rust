@@ -144,25 +144,30 @@ use std::collections::HashMap;
 ## 并发与异步
 
 ```rust
-// 线程
-let h = std::thread::spawn(move || { /* ... */ });
-h.join().unwrap();
+use std::sync::{Arc, Mutex};
 
-// 共享状态
-let c = Arc::new(Mutex::new(0));
-let c2 = Arc::clone(&c);
-*c2.lock().unwrap() += 1;
+fn main() {
+    // 线程
+    let h = std::thread::spawn(move || { /* ... */ });
+    h.join().unwrap();
 
-// 消息传递
-let (tx, rx) = std::sync::mpsc::channel();
-tx.send(v).unwrap();
-for msg in rx { }
+    // 共享状态
+    let c = Arc::new(Mutex::new(0));
+    let c2 = Arc::clone(&c);
+    *c2.lock().unwrap() += 1;
 
-// 异步
-#[tokio::main]
-async fn main() {
-    let r = tokio::spawn(async { 1 + 1 }).await.unwrap();
+    // 消息传递
+    let (tx, rx) = std::sync::mpsc::channel();
+    tx.send(1).unwrap();
+    drop(tx);
+    for msg in rx { println!("{}", msg); }
 }
+
+// 异步（需 tokio 依赖，与上面的 main 二选一）
+// #[tokio::main]
+// async fn main() {
+//     let r = tokio::spawn(async { 1 + 1 }).await.unwrap();
+// }
 ```
 
 <ConceptDiagram type="async" title="Future / executor / Waker 的关系" />

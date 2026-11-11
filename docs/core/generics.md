@@ -94,19 +94,24 @@ max::<f64>(...)  → 一份 f64 版本
 
 ```rust
 trait Draw { fn draw(&self) -> String; }
+struct Circle;
+struct Square;
+impl Draw for Circle { fn draw(&self) -> String { "圆".into() } }
+impl Draw for Square { fn draw(&self) -> String { "方".into() } }
 
 // 参数：任意实现了 Draw 的类型（本质是匿名泛型）
 fn render(item: &impl Draw) { println!("{}", item.draw()); }
 
 // 返回值：调用方只知道它实现了 Draw，不知道具体类型
 fn make_drawable(use_circle: bool) -> impl Draw {
-    if use_circle { Circle } else { Square }
+    if use_circle { Circle } else { Square }   // 故意留错，见下方说明
 }
 ```
 
 ⚠️ 上面 `make_drawable` 的两个分支返回了**不同类型**，这在 `impl Trait` 下是非法的（它要求单一具体类型）。要么统一成一个枚举，要么改用 `Box<dyn Draw>`。
 
 ```rust
+// 沿用上面的 trait Draw 与 Circle / Square 定义
 fn make_drawable(use_circle: bool) -> Box<dyn Draw> {
     if use_circle { Box::new(Circle) } else { Box::new(Square) }
 }
@@ -114,7 +119,10 @@ fn make_drawable(use_circle: bool) -> Box<dyn Draw> {
 
 ## 六、`dyn Trait`：运行时多态
 
+下面这段是**可以独立运行**的完整示例：
+
 ```rust
+trait Draw { fn draw(&self) -> String; }
 struct Circle;
 struct Square;
 impl Draw for Circle { fn draw(&self) -> String { "圆".into() } }
