@@ -25,7 +25,7 @@ pageClass: curriculum-page
 
 | # | 讲名 | 难度 | 对应页面 | 状态 |
 | --- | --- | --- | --- | --- |
-| 01 | 开篇：为什么是 Rust，这门课怎么走（基础概念串讲） | ★ | [第 01 讲 开篇](/guide/opening.md) | ✅ |
+| 01 | 开篇：基础概念串讲 | ★ | [第 01 讲 开篇](/guide/opening.md) | ✅ |
 | 02 | 装好环境：rustup、cargo 与 Playground | ★ | [装好你的 Rust 环境](/guide/setup.md) | ✅ |
 | 03 | 第一行代码：fn main 与 println! | ★ | [第一行 Rust 代码](/guide/hello.md) | ✅ |
 

@@ -7,7 +7,7 @@ description: 把 Rust 编译到浏览器所需的整条工具链讲透：target�
 
 # 第 58 讲 · WASM 工具链：`wasm-bindgen` 与 `wasm-pack`
 
-想让 Rust 代码跑在浏览器里，光有 `rustc` 不够 —— 编译产物只认整数和一段线性内存，而 JS 世界里有字符串、数组、对象和 Promise。这一讲专门讲**中间那层工具链**：谁负责编译、谁负责翻译、谁负责打包。下一篇 [第 59 讲](/projects/frontend/wasm-practice.md) 再用它做完整的图像加速实战。
+想让 Rust 代码跑在浏览器里，光有 `rustc` 不够 —— 编译产物只认整数和一段线性内存，而 JS 世界里有字符串、数组、对象和 Promise。这一讲专门讲**中间那层工具链**：谁负责编译、谁负责翻译、谁负责打包。下一讲 [第 59 讲](/projects/frontend/wasm-practice.md) 再用它做完整的图像加速实战。
 
 <Callout type="idea" title="先记住一句话" text="rustc 只负责编译成 .wasm；wasm-bindgen 负责生成 JS 胶水代码、把 JS 值搬进搬出线性内存；wasm-pack 把这两步串起来并补齐 npm 包元数据。" />
 

@@ -37,7 +37,7 @@ cd hello
 cargo run
 ```
 
-<Callout type="warn" title="暂时不想装？" text="完全可以。本站每个 Rust 代码块工具条右上角的「在线运行」按钮会打开官方 Rust Playground，零安装就能跑基础示例。建议先在 Playground 学完 L0～L2，等确定要继续了再回来装本地环境。" />
+<Callout type="warn" title="暂时不想装？" text="完全可以。本站每个 Rust 代码块工具条右上角的「在线运行」按钮会打开官方 Rust Playground，零安装就能跑基础示例。建议先用 Playground 跑通 L0～L1 和 L2 开头的语法示例；等碰到 Cargo 模块、外部依赖这类需要本地项目的讲次，再回来装环境。" />
 
 ## 认识 `cargo new` 生成了什么
 
@@ -84,4 +84,4 @@ edition = "2021"
 
 <Exercise title="自己动手" task="用 cargo 新建一个名为 `my-first` 的项目，把 `main.rs` 里打印的文字改成你的名字，再运行一次。" hints='["命令是 cargo new my-first，然后用 cd 进入目录", "字符串写在 println! 的引号里"]' solution="cargo new my-first\ncd my-first\n# 编辑 src/main.rs：\nfn main() {\n    println!(&quot;你好，我是小明&quot;);\n}\ncargo run" explain="改完保存，回到终端执行 cargo run 就能看到新输出。" />
 
-[下一节：写下第一行 Rust 代码 →](/guide/hello.md)
+[上一讲：第 01 讲 开篇 →](/guide/opening.md) · [下一讲：第 03 讲 第一行 Rust 代码 →](/guide/hello.md)

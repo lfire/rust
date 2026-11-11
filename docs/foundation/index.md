@@ -46,4 +46,4 @@ Rust 选了第三条路：**让编译器在编译期就搞清楚每个值的生�
 
 <CheckList id="foundation-intro" title="进入下一阶段之前" :items='["我能说出栈和堆各自适合放什么", "我知道 Rust 既没有 GC 也不需要手动 free", "我不指望跳过 L3，知道它为什么存在"]' />
 
-[开始第 04 讲：编程基本概念串讲 →](/foundation/concepts.md) · [直接看第 07 讲 函数与方法与闭包 →](/foundation/callables.md)
+[开始第 04 讲：程序、数据、值与类型 →](/foundation/concepts.md) · [直接看第 07 讲 函数、方法、闭包与表达式 →](/foundation/callables.md)

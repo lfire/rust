@@ -109,7 +109,7 @@ let input: i32 = input.parse().unwrap();  // 同名，类型从 &str 变成 i32
 - 遮蔽能同名重新绑定，甚至可以换类型。
 - 字符串（`&str` 与 `String`）不在本讲范围，见[第 10 讲](/basics/strings.md)。
 
-<Callout type="tip" title="下一讲预告" text="解析输入时那句 `let input: i32 = input.parse().unwrap();` 里的 `&str` 到底是什么？为什么 Rust 有两个字符串类型？[第 10 讲](/basics/strings.md) 会把「拥有 vs 借看」这条主线第一次摆到你面前。" />
+<Callout type="tip" title="下一讲预告" text="解析输入时那句 `let input: i32 = input.parse().unwrap();` 里的 `&str` 到底是什么？为什么 Rust 有两个字符串类型？[第 10 讲](/basics/strings.md) 会把「拥有 vs 借看」这条主线彻底讲清楚。" />
 
 <CheckList id="variables-check" title="学完本节，你应该能…" :items='["写出 let 和 let mut 并说明区别", "说出 i32 / u8 / f64 / bool / char 的用途", "解释为什么整数赋值需要显式转换", "用遮蔽改写一段解析输入的代码", "知道数组与 Vec 的分工，以及字符串会单独展开"]' />
 

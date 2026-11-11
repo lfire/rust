@@ -155,6 +155,6 @@ async fn handle_stream<S, N>(
 
 <CheckList id="kv4-check" title="第 4 步验收" :items='["Publish / Subscribe 命令可用", "一条连接上能同时跑命令流与订阅流", "前 3 步的全部测试仍然通过", "锁的作用域不覆盖网络 IO"]' />
 
-架构已经稳了，最后一步把它变成一个「能上线、能维护」的项目。
+架构已经稳了，KV Server 还差最后一步：把它变成一个「能上线、能维护」的项目。
 
 [下一讲：第 56 讲 KV 第 5 步 生产化 →](/projects/kv/5-production.md)

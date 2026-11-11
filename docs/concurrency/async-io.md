@@ -7,7 +7,7 @@ description: Reactor 与异步 IO、tokio::net、Stream/Sink、select! 与超时
 
 # 第 38 讲 · 异步 IO、`Stream` / `Sink` 与 tokio
 
-[上一讲](/concurrency/async.md) 讲了编译器把 `async fn` 变成什么。这一讲把整套机制落到**真实 IO**：网络怎么异步读写、连续消息怎么抽象成流、多个事件怎么同时等。学完 L4 就结束了。
+[上一讲](/concurrency/async.md) 讲了编译器把 `async fn` 变成什么。这一讲把整套机制落到**真实 IO**：网络怎么异步读写、连续消息怎么抽象成流、多个事件怎么同时等。学完这一讲，L4 就收尾了。
 
 ## 一、异步 IO 到底「异步」在哪
 

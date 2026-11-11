@@ -15,7 +15,7 @@ description: 用 axum 搭一个支持缩略图与缓存的 HTTP 图片服务，�
 - `Result` 映射到 HTTP 响应（404 / 400 / 500）
 - 图片解码 → 缩放 → 编码的完整数据流
 - 用 `Arc<Mutex<HashMap<...>>>` 做进程内缓存
-- 把「协议层 / 服务层 / 存储层」分开的第一次实践
+- 把「协议层 / 服务层 / 存储层」分开的初体验（下一讲会正式拆开）
 
 <ConceptDiagram type="pipeline" title="请求 → 路由 → 参数校验 → 缓存查询 → 图片处理 → 响应"
   labels="HTTP 请求::路由 / 校验|缓存查询::命中即返回|图片处理::缩放 / 滤镜|响应::Content-Type"

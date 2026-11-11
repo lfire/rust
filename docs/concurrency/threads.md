@@ -81,7 +81,7 @@ fn main() {
 error[E0277]: `Rc<Vec<i32>>` cannot be sent between threads safely
 ```
 
-编译器读的是类型，不是你的意图：`Rc` 的引用计数用普通整数，两个线程同时 `clone` / `drop` 会把计数改坏，所以它没实现 `Send`。换成 `Arc` 就好了（下一节）。
+编译器读的是类型，不是你的意图：`Rc` 的引用计数用普通整数，两个线程同时 `clone` / `drop` 会把计数改坏，所以它没实现 `Send`。换成 `Arc` 就好了（下一讲）。
 
 <Callout type="idea" title="这就是「无畏并发」" text="其他语言靠 code review 和压测去发现「这个对象不能跨线程」，Rust 把它变成一个编译错误。你不需要记住规则表，编译器会替你查。" />
 

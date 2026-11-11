@@ -7,7 +7,7 @@ description: 用 struct + enum + serde + JSON 文件，做出一个数据能存�
 
 # 第 42 讲 · 待办清单
 
-**场景**：一个真正的 CRUD 小工具。它把前三个阶段的知识第一次拼成闭环：**用 enum/struct 建模 → 用 serde 序列化 → 用 Result 处理 IO → 用子命令组织交互**。
+**场景**：一个真正的 CRUD 小工具。它把前面几个阶段的知识第一次拼成闭环：**用 enum/struct 建模 → 用 serde 序列化 → 用 Result 处理 IO → 用子命令组织交互**。
 
 ## 你会练到什么
 

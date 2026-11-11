@@ -24,7 +24,7 @@ const stats = [
     <section class="hp-hero">
       <span class="hp-kicker">从零开始 · 交互式中文教程</span>
       <h1>把 <em>Rust</em> 学成<br />你真正会用的语言</h1>
-      <p>不假设你有任何系统编程基础。66 讲、六个递进阶段、随堂交互练习，以及九类工程场景（含 Rust × 前端与桌面） —— 从第一行 <code>println!</code> 走到一个生产级 KV 服务。</p>
+      <p>不假设你有任何系统编程基础。66 讲、六个递进阶段、随堂交互练习，以及九类工程场景（含 Rust × 前端与桌面） —— 从第一行 <code>println!</code> 一路写到生产级服务、浏览器里的 WASM 模块与边缘函数。</p>
       <div class="hp-actions">
         <a class="hp-btn main" :href="withBase('/guide/opening')">🚀 从第 01 讲开始</a>
         <a class="hp-btn alt" :href="withBase('/projects/')">🏗️ 直接看工程实战</a>

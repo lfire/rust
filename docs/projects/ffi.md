@@ -7,7 +7,7 @@ description: 裸指针、extern C、repr(C) 与安全封装，掌握 Rust 与 C/
 
 # 第 53 讲 · unsafe Rust 与 FFI
 
-[第 54 讲 PyO3](/projects/pyo3.md) 用框架帮我们藏好了 FFI 细节。这一讲把盖子掀开：Rust 到底怎么和 C ABI 对话，以及为什么 `unsafe` 不是「关掉检查」，而是**把一部分安全证明的责任交给写代码的人**。
+PyO3 这类框架会把 FFI 细节整个包起来 —— [第 54 讲](/projects/pyo3.md) 就会用到它。但在走这条捷径之前，本讲先把盖子掀开：Rust 到底怎么和 C ABI 对话，以及为什么 `unsafe` 不是「关掉检查」，而是**把一部分安全证明的责任交给写代码的人**。
 
 ## unsafe 到底解开了什么
 

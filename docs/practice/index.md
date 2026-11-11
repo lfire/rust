@@ -3,7 +3,7 @@ title: 综合自测
 description: 按阶段分组的自测题库，答错会给出解释并指向对应章节。
 ---
 
-<StageHeader stage="附录 · 练习与速查" level="★★★☆☆" time="20 分钟" goal="找出自己还没吃透的章节" prereq="建议学完 L2 之后再来" />
+<StageHeader stage="附录 · 练习与速查" level="★★★☆☆" time="20 分钟" goal="找出自己还没吃透的章节" prereq="建议走完 66 讲之后再来" />
 
 # 综合自测
 
@@ -11,13 +11,13 @@ description: 按阶段分组的自测题库，答错会给出解释并指向对�
 
 <ProgressTracker />
 
-## 阶段一：编程地基
+## L1 · 编程地基
 
 <Quiz no="A-1" q="Rust 既没有 GC 也不需要手动 free，它靠什么保证内存被正确释放？" :options='["运行时引用计数", "编译期确定所有权与作用域，自动插入释放代码", "操作系统定期回收", "程序员写 drop 调用"]' answer="1" explain="见《栈与堆》与《所有权三法则与 Move》两节。" />
 
 <Quiz no="A-2" q="关于栈和堆，哪一句是错的？" :options='["栈上数据大小需在编译期确定", "函数返回时栈帧自动销毁", "堆上的数据必须有人负责释放", "String 的字符直接全部存放在栈上"]' answer="3" explain="String 在栈上只存指针/长度/容量，字符在堆上。见 《栈与堆》一节。" />
 
-## 阶段二：Rust 语法
+## L2 · Rust 语法
 
 <Quiz no="A-3" q="想让变量后面可以重新赋值，正确写法是？" :options='["let x = 5;", "let mut x = 5;", "var x = 5;", "const mut x = 5;"]' answer="1" explain="见第 09 讲《变量、可变性与类型推导》。" />
 
@@ -27,7 +27,7 @@ description: 按阶段分组的自测题库，答错会给出解释并指向对�
 
 <Quiz no="A-6" q="`cargo check` 相比 `cargo build` 的特点是？" :options='["会生成可发布的二进制文件", "只做检查不生成产物，速度更快", "只能检查测试代码", "会自动格式化代码"]' answer="1" explain="见 《Cargo 与项目结构》一节。" />
 
-## 阶段三：核心机制（重点）
+## L3 · 核心机制（重点）
 
 <Quiz no="A-7" q="执行 `let b = a;` 后 a 不能再用，最准确的解释是？" :options='["a 被删除了", "堆数据被搬走了", "所有权移交给 b，保证只有一个人负责释放堆内存", "String 不允许被打印两次"]' answer="2" explain="见《所有权三法则与 Move》一节（第 16 讲）。" />
 
@@ -43,7 +43,7 @@ description: 按阶段分组的自测题库，答错会给出解释并指向对�
 
 <Quiz no="A-13" q="`Rc&lt;T&gt;` 不能跨线程，应该换成？" :options='["Box", "Arc", "RefCell", "Cow"]' answer="1" explain="Arc 用原子操作维护引用计数。见 《智能指针》一节。" />
 
-## 阶段四：并发与异步
+## L4 · 并发与异步
 
 <Quiz no="A-14" q="`thread::spawn` 的闭包常需要 move，因为？" :options='["闭包会更快", "新线程可能比当前函数活得久，不能借用栈上局部变量", "spawn 强制要求", "move 会自动加锁"]' answer="1" explain="见《数据竞争与 Send/Sync》一节（第 31 讲）与《线程与 Send》。" />
 
@@ -51,7 +51,7 @@ description: 按阶段分组的自测题库，答错会给出解释并指向对�
 
 <Quiz no="A-16" q="关于 channel，哪些说法正确？" :options='["send 会转移值的所有权", "所有 tx 被 drop 后 recv 返回 Err", "sync_channel 提供背压", "一个 channel 可以有多个 rx 同时消费"]' answer="0,1,2" multi="true" explain="标准库 mpsc 是单消费者；多个 rx 要用 broadcast。见 《消息传递 Channel》一节。" />
 
-## 阶段五：工程实战
+## L5 · 工程实战
 
 <Quiz no="A-17" q="KV Server 把 Storage 定义成 trait，最大收益是？" :options='["编译更快", "存储实现可替换，上层代码不必改动", "能少写测试", "Rust 强制要求"]' answer="1" explain="见 《KV 第 1 步》一节。" />
 
