@@ -133,14 +133,31 @@ body { font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11'; }
 }
 .vp-doc th, .vp-doc td {
   white-space: normal;
-  overflow-wrap: anywhere;
-  word-break: break-word;
+  overflow-wrap: break-word;
+  word-break: normal;
   vertical-align: top;
   line-height: 1.7;
   hyphens: auto;
 }
+/* 短内容列：由 optimizeTables() 按列长自动标注，优先保证不换行；
+   内容多的列保持正常换行，吃剩余宽度。 */
+.vp-doc :is(th, td).rb-nowrap {
+  white-space: nowrap;
+  overflow-wrap: normal;
+  word-break: normal;
+}
+/* 极窄屏空间不足：固定列宽 + 紧凑排版，让多列表格靠换行容纳内容，
+   而不是撑出容器或出现横向滚动条（五条路径表有 6 列，最考验这一点）。 */
+@media (max-width: 640px) {
+  .vp-doc table { table-layout: fixed; }
+  .vp-doc th, .vp-doc td { padding: 6px 6px; font-size: 12px; }
+  .vp-doc :is(th, td).rb-nowrap {
+    white-space: normal;
+    overflow-wrap: break-word;
+  }
+}
 .vp-doc th { background: var(--rb-soft); font-weight: 700; }
-.vp-doc :not(pre) > code { overflow-wrap: anywhere; word-break: break-word; }
+.vp-doc :not(pre) > code { overflow-wrap: break-word; word-break: normal; }
 .vp-doc tr:hover td { background: color-mix(in srgb, var(--rb-soft) 60%, transparent); }
 
 /* 九类工程场景的分类徽章：A–I 与总目录 / 侧栏编号一致，统一形状与品牌配色；

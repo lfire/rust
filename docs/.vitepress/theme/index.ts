@@ -118,6 +118,51 @@ function enhanceCodeBlocks() {
   })
 }
 
+/** 按「视觉宽度」估算单元格文本长度：中文/全角算 2，其余算 1。 */
+function visualWidth(s: string): number {
+  let w = 0
+  for (const ch of s) w += /[\u2e80-\uffef]/u.test(ch) ? 2 : 1
+  return w
+}
+
+/**
+ * 表格列宽优化：内容本来就少的列（编号、标签、星级、状态等）保持不换行，
+ * 把换行压力交给内容多的列。VitePress 的 auto 布局会优先满足 nowrap 列的
+ * 最小宽度，再把剩余空间分给其它列，无需给每张表手写 colgroup。
+ */
+function optimizeTables() {
+  const tables = document.querySelectorAll<HTMLTableElement>('.vp-doc table')
+  tables.forEach((table) => {
+    if (table.dataset.rbTableOptimized) return
+    table.dataset.rbTableOptimized = '1'
+    // 目录讲次表、场景徽章表等已有 fixed + 精确列宽，交给 CSS 处理
+    if (getComputedStyle(table).tableLayout === 'fixed') return
+
+    const rows = Array.from(table.querySelectorAll('tr'))
+    const colCount = rows.reduce((n, r) => Math.max(n, r.children.length), 0)
+    if (colCount < 2) return
+
+    const widths = new Array<number>(colCount).fill(0)
+    for (const row of rows) {
+      for (let i = 0; i < row.children.length; i++) {
+        const text = (row.children[i].textContent || '').trim()
+        widths[i] = Math.max(widths[i], visualWidth(text))
+      }
+    }
+    const longest = Math.max(...widths)
+    // 只标注「自身内容短」且「不是最长列」的列；始终保留至少一列可换行，
+    // 避免整张表都 nowrap 而撑出容器。
+    const short = widths.map((w) => w <= 20 && w < longest)
+    if (!short.some(Boolean)) return
+
+    for (const row of rows) {
+      for (let i = 0; i < row.children.length; i++) {
+        if (short[i]) (row.children[i] as HTMLElement).classList.add('rb-nowrap')
+      }
+    }
+  })
+}
+
 let timer: ReturnType<typeof setTimeout> | undefined
 
 export default {
@@ -131,7 +176,10 @@ export default {
     const router = useRouter()
     const run = () => {
       if (timer) clearTimeout(timer)
-      timer = setTimeout(enhanceCodeBlocks, 120)
+      timer = setTimeout(() => {
+        enhanceCodeBlocks()
+        optimizeTables()
+      }, 120)
     }
     onMounted(() => {
       run()
