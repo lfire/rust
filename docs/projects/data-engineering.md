@@ -202,4 +202,4 @@ customer,amount
 
 <CheckList id="data-eng-check" title="验收清单" :items='["sqlx 能建表、插入、参数化查询与事务", "DataFusion 能对 CSV 做 GROUP BY 聚合", "能说出 OLTP 与 OLAP 的选型依据", "看过一次 EXPLAIN 物理计划", "没有用字符串拼接 SQL"]' />
 
-[上一讲：第 49 讲 SQL / CSV 工具 →](/projects/sql-data-tool.md) · [回到场景地图 →](/projects/)
+[上一讲：第 49 讲 SQL / CSV 工具 →](/projects/sql-data-tool.md) · [下一讲：第 51 讲 手写 MPSC channel →](/projects/mpsc-channel.md) · [回到场景地图 →](/projects/)

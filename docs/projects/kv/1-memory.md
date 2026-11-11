@@ -176,4 +176,4 @@ mod tests {
 
 核心逻辑已经稳固。下一步让它「能被别人调用」：加网络层和协议帧。
 
-[进入第 2 步：网络与协议帧 →](/projects/kv/2-network.md)
+[下一讲：第 46 讲 KV 第 2 步 网络与协议帧 →](/projects/kv/2-network.md)

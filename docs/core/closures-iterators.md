@@ -11,6 +11,10 @@ description: FnOnce / FnMut / Fn 的推导与包含关系、闭包的三种传�
 
 ## 一、闭包到底是什么
 
+闭包不只是「没有名字的函数」，它还会把定义时所在环境里的变量一起打包带走。
+
+<ConceptDiagram type="closure-capture" title="闭包如何捕获外围环境" />
+
 编译器把每个闭包变成一个**匿名结构体**，捕获的外部变量就是它的字段，再为它实现 `Fn` / `FnMut` / `FnOnce` 之一：
 
 ```rust

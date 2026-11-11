@@ -172,4 +172,4 @@ fn heavy(py: Python<'_>, nums: Vec<i64>) -> i64 {
 
 <CheckList id="pyo3-check" title="验收清单" :items='["maturin develop 能成功构建安装", "Python 能调用 Rust 函数与类方法", "错误映射成了合适的 Python 异常", "知道 GIL 释放期间的约束"]' />
 
-[最后一个项目：第 57 讲 软件架构、生态与持续精进 →](/projects/production.md)
+[下一讲：第 55 讲 KV 第 4 步 大重构与 Pub/Sub →](/projects/kv/4-refactor.md) · [回到 66 讲完整目录 →](/guide/curriculum.md)

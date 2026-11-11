@@ -176,4 +176,4 @@ cat todos.json
 
 <CheckList id="todo-check" title="验收清单" :items='["四个子命令都能工作", "数据确实写入了 todos.json 且重启后还在", "文件损坏时给出可读错误", "写了临时文件再 rename"]' />
 
-[下一个项目：第 44 讲 图片服务器 →](/projects/image-server.md)
+[下一个项目：第 43 讲 CLI 工程化 →](/projects/cli-engineering.md)

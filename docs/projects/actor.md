@@ -177,4 +177,4 @@ async fn main() {
 
 <CheckList id="actor-check" title="验收清单" :items='["Actor 状态是任务内局部变量、无锁", "tell 与 ask 两种消息都实现", "邮箱有界且能形成背压", "知道句柄全 drop 会导致 Actor 退出", "能说出与 Arc&lt;Mutex&gt; 的取舍"]' />
 
-[上一讲：第 51 讲 手写 MPSC →](/projects/mpsc-channel.md) · [下一讲：unsafe 与 FFI →](/projects/ffi.md)
+[上一讲：第 51 讲 手写 MPSC →](/projects/mpsc-channel.md) · [下一讲：第 53 讲 unsafe Rust 与 FFI →](/projects/ffi.md)

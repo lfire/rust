@@ -13,6 +13,10 @@ description: async fn 编译成什么状态机、Waker 如何唤醒、Pin 为何
 
 ## 一、`async fn` 会被编译成状态机
 
+一次 `await` 就是一次状态切换：从 Start 到 Pending 让出线程，再由 Waker 唤醒。
+
+<ConceptDiagram type="state-machine" title="async fn 的状态机" />
+
 ```rust
 async fn fetch_user(id: u32) -> String {
     let a = read_db(id).await;

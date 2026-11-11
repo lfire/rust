@@ -37,6 +37,10 @@ C / Java 的枚举本质是「带名字的整数」；Rust 的枚举是**和类�
 
 ### 内存布局
 
+tag、payload 与 niche 优化共同决定了 enum 占多少内存。
+
+<ConceptDiagram type="enum-layout" title="enum、Option 与 Result 的内存布局" />
+
 编译器给每个值加一个 **tag**（哪个变体），再留出能容纳**最大变体**的空间：
 
 ```text

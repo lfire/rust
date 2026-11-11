@@ -160,6 +160,71 @@ body { font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11'; }
 .vp-doc :not(pre) > code { overflow-wrap: break-word; word-break: normal; }
 .vp-doc tr:hover td { background: color-mix(in srgb, var(--rb-soft) 60%, transparent); }
 
+/* 概念图：内容居中 + 放大查看（滚轮连续缩放、拖拽平移，弹层按视口适配整图） */
+.rb-figure { max-width: 860px; margin: 1.5rem auto; text-align: center; }
+.rb-fig-head {
+  display: flex; align-items: center; justify-content: space-between; gap: .8rem;
+  margin-bottom: .5rem; text-align: left;
+}
+.rb-zoom-btn {
+  border: 1px solid var(--rb-line); background: var(--rb-surface); color: var(--rb-muted);
+  border-radius: 8px; padding: 4px 10px; font-size: 12px; font-weight: 650; cursor: pointer;
+  white-space: nowrap; font-family: inherit;
+}
+.rb-zoom-btn:hover { color: var(--rb-orange); border-color: var(--rb-orange); }
+.rb-zoom-btn:focus-visible, .rb-fig-frame:focus-visible { outline: 2px solid var(--rb-orange); outline-offset: 2px; }
+.rb-fig-frame {
+  border: 1px solid var(--rb-line); border-radius: 12px; background: var(--rb-surface);
+  padding: 1rem .6rem .3rem; box-shadow: var(--rb-shadow);
+  cursor: zoom-in; transition: border-color .2s ease, box-shadow .2s ease;
+}
+.rb-fig-frame:hover { border-color: var(--rb-orange); box-shadow: 0 6px 22px rgba(232, 89, 12, .14); }
+.rb-fig-caption {
+  font-size: 12.5px; color: var(--rb-muted); text-align: center; margin-top: .55rem; line-height: 1.7;
+}
+.rb-lightbox {
+  position: fixed; inset: 0; z-index: 9999; background: rgba(18, 16, 14, .72);
+  display: flex; align-items: center; justify-content: center; padding: 2vh 2vw;
+}
+.rb-lightbox-panel {
+  /* 必须给明确高度：画布是绝对定位的，撑不开 body；flex:1 只有在父级有确定高度时才有意义 */
+  width: min(1180px, 96vw); height: min(92vh, 880px); max-height: 94vh;
+  display: flex; flex-direction: column;
+  background: var(--rb-surface); border: 1px solid var(--rb-line); border-radius: 14px;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, .35); overflow: hidden;
+}
+.rb-lightbox-head {
+  display: flex; align-items: center; justify-content: space-between; gap: .8rem; flex-wrap: wrap;
+  padding: .75rem 1rem; border-bottom: 1px solid var(--rb-line); font-size: 14px; text-align: left;
+}
+.rb-lightbox-actions { display: flex; gap: .5rem; flex-wrap: wrap; align-items: center; }
+.rb-lightbox-actions .rb-btn { padding: 4px 10px; font-size: 12px; min-width: 30px; }
+.rb-zoom-level {
+  font-size: 12px; color: var(--rb-muted); min-width: 46px; text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+.rb-lightbox-body {
+  position: relative; flex: 1 1 auto; min-height: 0; overflow: hidden;
+  background: var(--rb-surface); cursor: grab; touch-action: none; user-select: none;
+}
+.rb-lightbox-body.dragging { cursor: grabbing; }
+/* 固定的逻辑尺寸与 SVG viewBox 对齐，缩放交给 transform，坐标计算不随窗口变化 */
+.rb-zoom-canvas { position: absolute; top: 0; left: 0; width: 680px; will-change: transform; }
+.rb-lightbox-foot {
+  padding: .6rem 1rem; font-size: 12.5px; color: var(--rb-muted); text-align: center;
+  border-top: 1px solid var(--rb-line); line-height: 1.7;
+}
+@media (max-width: 640px) {
+  .rb-fig-head { flex-wrap: wrap; }
+  .rb-lightbox { padding: 1vh 1vw; }
+  /* 窄屏按宽度适配后图很矮，弹层过高只会留下大片空白 */
+  .rb-lightbox-panel { width: 98vw; height: min(78vh, 600px); }
+  .rb-lightbox-head { padding: .55rem .7rem; }
+  .rb-lightbox-actions { gap: .3rem; }
+  .rb-lightbox-actions .rb-btn { padding: 3px 7px; }
+  .rb-lightbox-foot { padding: .45rem .7rem; font-size: 11.5px; }
+}
+
 /* 九类工程场景的分类徽章：A–I 与总目录 / 侧栏编号一致，统一形状与品牌配色；
    .dark 下 --rb-orange / --rb-orange-soft 已覆盖，无需额外规则。 */
 .rb-scene-badge {

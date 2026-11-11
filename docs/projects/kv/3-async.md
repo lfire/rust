@@ -160,4 +160,4 @@ loop {
 
 传输层就绪，接下来做一次真正的架构升级：多路复用 + 发布订阅。
 
-[进入第 4 步：重构与 Pub/Sub →](/projects/kv/4-refactor.md)
+[按讲次顺序：第 48 讲 网络编程进阶 →](/projects/network-advanced.md) · [按 KV 贯穿线：第 55 讲 大重构与 Pub/Sub →](/projects/kv/4-refactor.md)

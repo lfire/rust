@@ -200,4 +200,26 @@ fn main() {
 
 <CheckList id="embedded-check" title="验收清单" :items='["能说出 no_std 下 std 的哪些能力不可用", "理解外设单例与所有权的关系", "知道交叉编译目标三元组怎么选", "能画出 wgpu 的 device / queue / pipeline 关系", "知道 Bevy 的 ECS 与 system 大致职责"]' />
 
-这一讲走完了九类工程场景。[回到场景地图复盘 →](/projects/) · [查看软件架构、生态与持续精进 →](/projects/production.md)
+## 恭喜，你走完了整套教程 🎉
+
+这一讲走完了 L5 的第九类场景，也是**全套 66 讲的最后一讲**。从第一行 `println!`、栈与堆、所有权三法则，到 trait 抽象、泛型、并发与异步，你已经把 Rust 放进四种宿主里各跑了一遍：
+
+| 宿主 | 对应场景 | 典型约束 |
+| --- | --- | --- |
+| 服务器 / 本机进程 | 命令行、网络服务、数据处理、并发系统、架构与生产化 | 完整 `std`，重点是可靠性与可维护性 |
+| 浏览器 / WebView | WASM、Leptos SPA、Tauri、Node 插件、全栈类型共享 | 跨语言边界、线性内存、类型映射 |
+| 容器 / 边缘节点 | gRPC 微服务、Serverless 与边缘 WASM | 冷启动、无状态、资源上限 |
+| 裸机 / GPU | `no_std` 嵌入式、wgpu / Bevy | 没有堆、没有操作系统，显式管理内存 |
+
+再加上从「一个 HashMap」演进到可上线系统的 KV Server 贯穿线，你已经具备独立阅读 Rust 项目、动手写工具与服务的基础。
+
+接下来推荐：
+
+- 回到 [综合自测](/practice/) 检验整体掌握度，把错题对应的章节重看一遍。
+- 翻翻 [语法速查表](/practice/cheatsheet.md)，把它当成日常查阅的手册。
+- 挑一个 [工程场景](/projects/) 改成你自己的需求，按 [第 57 讲给出的进阶路线](/projects/production.md) 做一次完整交付。
+- 阅读 [关于本站与内容来源](/about/)，了解这套教程和原始教材的关系。
+
+<CheckList id="final-check" title="最终验收" :items='["我能说清所有权、借用与生命周期三条规则", "我能用 trait 与泛型做抽象，知道何时该用 dyn Trait", "我能用 Result 与 ? 组织错误，而不是到处 unwrap", "我知道并发与异步各自解决什么问题", "我能说出四种宿主各自的约束与对应工程场景", "我准备开始做自己的项目了"]' />
+
+[回到场景地图复盘 →](/projects/) · [回顾第 57 讲 通用工程能力 →](/projects/production.md) · [回到 66 讲完整目录 →](/guide/curriculum.md)

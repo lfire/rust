@@ -214,4 +214,4 @@ fn main() -> anyhow::Result<()> {
 
 <CheckList id="sql-check" title="验收清单" :items='["能解析并执行一条带 WHERE 与 LIMIT 的查询", "CSV 与内存表复用同一个 execute", "理解 Box 在递归 AST 中的作用", "知道真实项目该用哪些 crate"]' />
 
-[下一个项目：第 51 讲 手写 MPSC channel →](/projects/mpsc-channel.md)
+[下一个项目：第 50 讲 数据工程 →](/projects/data-engineering.md)

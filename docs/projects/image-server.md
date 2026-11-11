@@ -168,4 +168,4 @@ curl -i "http://127.0.0.1:3000/img/missing.png"     # 404
 
 <CheckList id="image-check" title="验收清单" :items='["服务能启动且 /health 返回 ok", "缩放结果正确且第二次请求命中缓存", "非法参数与不存在图片返回正确状态码", "路径穿越被挡住"]' />
 
-[下一个项目：第 49 讲 SQL / CSV 数据工具 →](/projects/sql-data-tool.md)
+[下一讲：第 45 讲 KV 第 1 步 内存版与 trait 抽象 →](/projects/kv/1-memory.md) · [KV Server 贯穿线总览 →](/projects/kv/index.md)

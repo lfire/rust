@@ -174,4 +174,4 @@ cargo test
 
 <CheckList id="mpsc-check" title="验收清单" :items='["四组测试全部通过", "能解释为什么 wait 要放在 loop 里", "知道关闭时为什么用 notify_all", "理解有界队列的背压语义"]' />
 
-[进入贯穿项目：KV Server 总览 →](/projects/kv/index.md)
+[下一讲：第 52 讲 Actor 模型与任务分发 →](/projects/actor.md) · [进入贯穿项目：KV Server 总览 →](/projects/kv/index.md)

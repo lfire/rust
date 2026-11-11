@@ -11,6 +11,10 @@ description: 胖指针内存布局、UTF-8 字节索引陷阱、Deref 强制转�
 
 ## 一、切片是胖指针
 
+`Vec<T>`、`&Vec<T>` 与 `&[T]` 的关系最容易被混淆，看这张图理清层次。
+
+<ConceptDiagram type="slice-relation" title="Vec 与切片视图" />
+
 普通引用 `&T` 只存一根地址；切片 `&[T]` / `&str` 存**两根**：
 
 ```text

@@ -133,6 +133,10 @@ fn block_on<F: Future<Output = ()> + Send + 'static>(future: F) {
 
 ## 四、协作式调度的含义
 
+为什么等 I/O 时不能一直占着线程？看看各个层级之间的数量级差就明白了。
+
+<ConceptDiagram type="io-latency" title="CPU 与 I/O 的速度鸿沟" />
+
 任务只有在 `.await` 处才会让出执行权。如果某个 `async` 块里跑了 500 ms 的纯 CPU 计算且没有 await，它会**独占整个 worker 线程**，其它任务全部饿死。
 
 ```rust

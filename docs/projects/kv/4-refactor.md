@@ -157,4 +157,4 @@ async fn handle_stream<S, N>(
 
 架构已经稳了，最后一步把它变成一个「能上线、能维护」的项目。
 
-[进入第 5 步：生产化 →](/projects/kv/5-production.md)
+[下一讲：第 56 讲 KV 第 5 步 生产化 →](/projects/kv/5-production.md)

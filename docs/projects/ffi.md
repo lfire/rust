@@ -175,4 +175,4 @@ rust_free_string(s);
 
 <CheckList id="ffi-check" title="验收清单" :items='["能说出 unsafe 开放的五种能力", "每个 unsafe 块都有 SAFETY 注释", "跨 FFI 的结构体用了 repr(C)", "字符串用 CString / CStr 且所有权清晰", "对外暴露的是安全 API，调用方不必写 unsafe"]' />
 
-[上一讲：第 54 讲 PyO3 扩展 →](/projects/pyo3.md) · [回到场景地图 →](/projects/)
+[上一讲：第 52 讲 Actor 模型 →](/projects/actor.md) · [下一讲：第 54 讲 用 PyO3 写 Python 扩展 →](/projects/pyo3.md) · [回到场景地图 →](/projects/)

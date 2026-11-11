@@ -203,4 +203,4 @@ async fn main() -> Result<()> {
 
 <CheckList id="net-adv-check" title="验收清单" :items='["连接建立与断开都能在注册表里正确反映", "Ctrl+C 后在途请求有宽限期", "有界发件箱能阻止内存无限增长", "心跳超时会主动断开", "帧长度有上限校验"]' />
 
-[上一讲：KV 第 3 步 TLS 与异步 →](/projects/kv/3-async.md) · [下一讲：KV 第 4 步 重构与 Pub/Sub →](/projects/kv/4-refactor.md)
+[上一讲：第 47 讲 KV 第 3 步 TLS 与异步 →](/projects/kv/3-async.md) · [下一讲：第 49 讲 SQL / CSV 数据工具 →](/projects/sql-data-tool.md) · [KV 贯穿线：第 55 讲 大重构与 Pub/Sub →](/projects/kv/4-refactor.md)

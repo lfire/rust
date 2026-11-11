@@ -73,6 +73,10 @@ pub fn add(a: i32, b: i32) -> i32 { a + b }
 
 ## JS 侧调用
 
+两次跨边界拷贝分别发生在哪，看这张图比逐行读代码更快。
+
+<ConceptDiagram type="wasm-memory" title="JS 堆与 WASM 线性内存" />
+
 ```html
 <script type="module">
 import init, { grayscale, mean_luma, add } from './pkg/image_wasm.js';

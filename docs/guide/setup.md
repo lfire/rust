@@ -37,7 +37,7 @@ cd hello
 cargo run
 ```
 
-<Callout type="warn" title="暂时不想装？" text="完全可以。本站每个 Rust 代码块左上角的「在线运行」按钮会打开官方 Rust Playground，零安装就能跑代码。建议先在 Playground 学完 L0～L2，等确定要继续了再回来装本地环境。" />
+<Callout type="warn" title="暂时不想装？" text="完全可以。本站每个 Rust 代码块工具条右上角的「在线运行」按钮会打开官方 Rust Playground，零安装就能跑基础示例。建议先在 Playground 学完 L0～L2，等确定要继续了再回来装本地环境。" />
 
 ## 认识 `cargo new` 生成了什么
 

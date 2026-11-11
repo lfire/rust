@@ -37,6 +37,10 @@ fn main() {
 
 ## 二、内存里长什么样
 
+把 `String` 和 `&str` 画在同一张图里，「拥有」与「借看」的差别一眼可见。
+
+<ConceptDiagram type="string-layout" title="String 与字符串切片" />
+
 `String` 的变量本身很小，放在栈上；真正的字符字节放在堆上。
 
 | 组成 | `String` | `&str` |

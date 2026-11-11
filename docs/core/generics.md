@@ -79,6 +79,10 @@ where
 
 ## 四、单态化：为什么是零成本
 
+泛型与 `dyn Trait` 走的是两条完全不同的代码生成路径，先看这张对照图。
+
+<ConceptDiagram type="monomorph" title="单态化与动态分派" />
+
 编译器会为**每一个实际用到的具体类型**生成一份专用机器码：
 
 ```text
@@ -118,6 +122,10 @@ fn make_drawable(use_circle: bool) -> Box<dyn Draw> {
 ```
 
 ## 六、`dyn Trait`：运行时多态
+
+`dyn Trait` 是胖指针：一根指针指向数据，另一根指向该类型的方法表。
+
+<ConceptDiagram type="vtable" title="trait object 与虚表" />
 
 下面这段是**可以独立运行**的完整示例：
 

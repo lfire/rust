@@ -161,4 +161,4 @@ async fn main() -> anyhow::Result<()> {
 
 下一步给这条明文连接加 TLS，并把同步思路彻底改成异步流。
 
-[进入第 3 步：TLS 与异步 →](/projects/kv/3-async.md)
+[下一讲：第 47 讲 KV 第 3 步 TLS 与异步 →](/projects/kv/3-async.md)

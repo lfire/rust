@@ -13,6 +13,10 @@ description: 用 struct 建模型，用 impl 加方法，掌握三种 self、可
 
 ## 一、struct 的三种形态
 
+结构体在内存里并不按书写顺序简单排开，编译器会按对齐要求重排字段。
+
+<ConceptDiagram type="memory-align" title="字段重排与内存对齐" />
+
 ```rust
 // 1. 具名字段（最常用）
 struct User {
