@@ -37,6 +37,10 @@ fn main() {
 2. `recv()` 会阻塞直到有消息；`try_recv()` 不阻塞，返回 `Result`。
 3. `tx` 全部被丢弃（或 `rx` 被丢弃）时，通道关闭，`recv` 返回 `Err`。
 
+把一次 send / recv 画成时序图，就容易看清「值什么时候归谁」：
+
+<SequenceDiagram title="一次 mpsc 收发的完整链路" caption="点图可放大：send 转移所有权，recv 阻塞等待，所有 tx 被丢弃后通道关闭。" :actors='["生产者","通道","消费者"]' :steps='[{"from":"生产者","to":"通道","label":"send(msg)","note":"值的所有权交给通道","kind":"call"},{"from":"生产者","to":"生产者","label":"msg 此后不可再用","note":"编译器保证无并发修改","kind":"self"},{"from":"消费者","to":"通道","label":"recv() 阻塞等待","note":"也可用 try_recv 不阻塞","kind":"call"},{"from":"通道","to":"消费者","label":"返回 msg","note":"所有权再转给接收方","kind":"return"},{"from":"生产者","to":"通道","label":"drop(tx)","note":"所有发送端都释放后关闭","kind":"call"},{"from":"通道","to":"消费者","label":"recv() 返回 Err","note":"据此退出消费循环","kind":"return"}]' />
+
 ## 多个生产者
 
 `tx` 可以克隆，每个生产者拿一份：

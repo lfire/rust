@@ -75,6 +75,19 @@ fn delay(d: Duration) -> Delay {
 
 ⚠️ 上面每次 poll 都 spawn 一个线程只是**教学简化**，真实实现会把定时器注册到 Reactor，由事件循环统一唤醒，绝不会一个 Future 一个线程。
 
+刚才那段最小 Future 信息密度有点高，点左边任意一行，看它在整个 poll 流程里负责什么：
+
+<LineByLine title="最小 Future 逐行讲解" code="struct Delay { until: Instant, started: bool }
+impl Future for Delay {
+  type Output = ();
+  fn poll(self: Pin&lt;&amp;mut Self&gt;, cx: &amp;mut Context) -&gt; Poll&lt;()&gt; {
+    if Instant::now() &gt;= self.until { return Poll::Ready(()) }
+    let waker = cx.waker().clone();
+    thread::spawn(move || waker.wake());
+    Poll::Pending
+  }
+}" :notes='["状态里只存「等到什么时候」和「有没有启动过定时器」，Future 本身不推进自己", "给 Delay 实现 Future，等于告诉执行器：这个值以后会就绪", "关联类型写定这个 Future 完成时产出什么，这里是「没有值」", "poll 是整个异步机制的唯一入口；Pin 保证 self 不会被移动，Context 提供唤醒器", "时间到了就直接返回 Ready，执行器会把这个任务标为完成", "先克隆一份 Waker：线程醒来后要靠它通知执行器「可以再 poll 一次」", "教学简化版用线程睡到点再 wake，真实实现交给 Reactor 统一注册定时器", "返回 Pending 不是失败，而是「现在没好，好了我会叫你」—— 这一步最容易被误读"]' />
+
 ## 三、手写一个单线程 executor（block_on）
 
 ```rust

@@ -127,6 +127,10 @@ fn main() {
 
 <Exercise title="把所有权版本改成借用版本" task="下面代码编译不过。请在不删除任何输出的前提下，把 `take` 改成只读借用版本；再写一个 `fn first_word(s: &str) -&gt; &str` 返回第一个空格前的单词（找不到则返回整个 s）。" hints='["参数改 &amp;String 或更通用的 &amp;str，调用处加 &amp;", "first_word 可用 find( 空格 ) 或 split_whitespace", "返回切片时注意它借用自参数 s"]' solution="fn take(s: &amp;str) { println!(&quot;{}&quot;, s); }\n\nfn first_word(s: &amp;str) -&gt; &amp;str {\n    match s.find(' ') {\n        Some(i) =&gt; &amp;s[..i],\n        None =&gt; s,\n    }\n}\n\nfn main() {\n    let s = String::from(&quot;hello rust&quot;);\n    take(&amp;s);\n    println!(&quot;{} {}&quot;, first_word(&amp;s), s);\n}" explain="返回的 &amp;str 借用自参数，调用方 s 仍是所有者 —— 这就是零拷贝解析的基础。" />
 
+把这一讲的核心规则压成一页，复习时先看这张卡，下面的「常见坑」再逐条对照：
+
+<KnowledgeCard title="借用 · 一页纸速记" :points='["同一时刻：要么一个可变借用，要么任意多个不可变借用", "引用的寿命不能超过被引用值，所以不能返回局部变量的引用", "参数优先写切片类型，能同时接数组、Vec 与字符串字面量"]' :pitfalls='["把借用当成运行期锁：它只在编译期检查，没有任何运行时开销", "为了过编译就到处 clone：先想想能不能缩小借用范围", "把生命周期标注当成延长寿命：标注只描述关系，不改变谁活多久"]' summary="借用是暂时借看，不转移所有权；编译器用生命周期保证借来的东西一直活着。" />
+
 ## 常见坑
 
 | 现象 | 处理 |

@@ -18,7 +18,7 @@ const pct = computed(() => LESSONS.length
 function stat(s: Stage) {
   const all = LESSONS.filter(l => l.stage === s)
   const n = all.filter(l => done.value.includes(l.path)).length
-  return { n, total: all.length, pct: Math.round(n / all.length * 100) }
+  return { n, total: all.length, pct: all.length ? Math.round(n / all.length * 100) : 0 }
 }
 function resetAll() {
   if (typeof window === 'undefined') return

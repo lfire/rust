@@ -115,6 +115,10 @@ fn record_latency(_: std::time::Duration) {}
 
 <Callout type="idea" title="Rust 怎么帮架构落地" text="很多团队的「架构规则」靠文档和 code review 维持，容易被绕过。Rust 可以用模块可见性（`pub(crate)`）、trait 边界、类型系统把一部分规则变成**编译期约束** —— 比如让网络层根本拿不到 Storage 的具体类型，就只能走 trait。" />
 
+把刚才四个层次铺成一个可点击的分层图。点任意模块，看它的职责、选型和失败时怎么处理：
+
+<ArchBlueprint title="一个 Rust 服务的分层骨架" caption="结构决定分几块，决策决定哪条边界不许被绕过；Rust 用模块可见性和 trait 把后者变成编译期约束。" :layers='[{"name":"接入层 · HTTP / gRPC","note":"只负责协议与鉴权，不碰存储","protocol":"请求 DTO → 领域命令","items":[{"label":"Router","sub":"axum / tonic","detail":"把 URL 与方法映射到 handler，统一做参数校验、超时与限流。失败时返回结构化错误，不把底层异常透传给调用方。","tone":"blue"},{"label":"Middleware","sub":"tower Layer","detail":"日志、追踪、认证、重试等横切关注点。用 Service + Layer 组合，保证每一层都能单独测试。","tone":"green"}]},{"name":"领域层 · Service","note":"唯一被允许做业务决策的地方","protocol":"trait 边界 → 仓储接口","items":[{"label":"Command Handler","sub":"纯业务逻辑","detail":"接收领域命令，编排流程并返回领域结果。这里不出现 SQL、不出现 HTTP 状态码，方便脱离 IO 做单元测试。","tone":"orange"},{"label":"Storage trait","sub":"依赖倒置","detail":"用 trait 声明「需要什么能力」而非「用哪个数据库」。内存实现用于测试，生产实现可换成 Postgres 或 KV 引擎。","tone":"purple"}]},{"name":"基础设施层 · IO","note":"实现上层声明的 trait","protocol":"连接池 / 配置 / 指标","items":[{"label":"Repository","sub":"sqlx / deadpool","detail":"把领域对象映射到持久化结构，连接放进池里复用。错误在这一层转成领域错误，附带上下文但不泄漏实现细节。","tone":"blue"},{"label":"Observability","sub":"tracing / metrics","detail":"跨层传递 span，把一次请求的完整链路串起来。指标与日志统一出口，避免每个模块各写一套。","tone":"green"}]}]' />
+
 ## 五、常见质量属性与 Rust 工具
 
 质量属性列得出来很多，关键是给当前系统排出优先级，而不是全都要。

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
+import AnswerReview from './AnswerReview.vue'
 
 const props = defineProps<{
   q?: string
@@ -21,20 +22,24 @@ const opts = computed(() => {
 })
 const right = computed(() => Number(props.answer))
 const letters = ['A', 'B', 'C', 'D', 'E']
+/** 交给共用结果卡片：与单选题保持同一套答案 + 解析展示 */
+const correctAnswers = computed(() => [{
+  label: letters[right.value] || String(right.value + 1),
+  text: opts.value[right.value] || '',
+}])
 const picked = ref<number | null>(null)
 const shown = ref(false)
 const ok = computed(() => picked.value === right.value)
 function choose(i: number) { if (!shown.value) picked.value = i }
 function reveal() { if (picked.value !== null) shown.value = true }
 function reset() { picked.value = null; shown.value = false }
-function pretty(s?: string) { return (s || '').replace(/\\n/g, '\n') }
 </script>
 
 <template>
   <div class="rb-card rb-predict">
     <div class="rb-eyebrow" style="color:var(--rb-blue)">先猜结果 · Prediction</div>
     <div class="q-head" style="margin-top:.35rem">
-      <span class="q-no" style="color:var(--rb-blue);background:var(--rb-blue-soft)">{{ no || 'P' }}</span>
+      <span class="q-no">{{ no || 'P' }}</span>
       <span class="q-text">{{ q || '上面这段代码运行后会输出什么？' }}</span>
     </div>
     <div class="rb-options">
@@ -52,11 +57,7 @@ function pretty(s?: string) { return (s || '').replace(/\\n/g, '\n') }
       <button v-else class="rb-btn ghost" @click="reset">重新猜一次</button>
     </div>
     <Transition name="rb-fade">
-      <div v-if="shown" class="rb-feedback" :class="ok ? 'ok' : 'no'" style="margin-top:.8rem">
-        <b>{{ ok ? '✓ 猜对了！' : '✗ 结果是 ' + (letters[right] || '') }}</b>
-        <div v-if="output" class="out">{{ pretty(output) }}</div>
-        <div v-if="explain" style="margin-top:.6rem;color:var(--rb-ink);font-size:13.5px">{{ explain }}</div>
-      </div>
+      <AnswerReview v-if="shown" :ok="ok" :answers="correctAnswers" :explain="explain" :output="output" mode="predict" />
     </Transition>
   </div>
 </template>

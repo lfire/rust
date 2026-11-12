@@ -42,6 +42,10 @@ fn main() {
 }
 ```
 
+从建项目到跑起来，一次完整迭代其实就这五步：
+
+<FlowTimeline title="一次 Cargo 迭代" :steps='[{"title":"cargo new","desc":"生成 Cargo.toml 与 src/main.rs","tone":"blue"},{"title":"cargo add","desc":"把依赖写进 Cargo.toml 并解析版本","tone":"orange"},{"title":"编辑代码","desc":"在 src/ 里写实现与同文件的单元测试","tone":"green"},{"title":"cargo test","desc":"跑单元测试、集成测试与文档测试","tone":"purple"},{"title":"cargo run","desc":"编译并执行；增量构建只重编改动过的 crate","tone":"blue"}]' direction="horizontal" />
+
 ## 模块：把代码拆到不同文件
 
 ```text
